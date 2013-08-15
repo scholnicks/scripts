@@ -1,6 +1,5 @@
 #!/usr/bin/python -BO
-"""
-album:  Creates a album of JPEGs complete with thumbnails. ImageMagick's convert does the hard work
+"""album:  Creates a album of JPEGs complete with thumbnails. ImageMagick's convert does the hard work
 
 (c) Steven Scholnick <steve@scholnick.net>
 
@@ -16,12 +15,11 @@ from __future__ import print_function
 import os, sys, re, math, subprocess
 from string import Template
 
-def main():
-    sourceDirectory = os.path.abspath(args[0])
+def main(startingDirectory):
     createDirectory(options.destination)
-    
+
     pictureFiles = []
-    for root, dirs, files in os.walk(sourceDirectory):
+    for root, dirs, files in os.walk(os.path.abspath(startingDirectory)):
         pictureFiles += [ImageFile(os.path.join(root,f)) for f in files if f.lower().endswith(".jpg")]
         
     pageNumber    = 1
@@ -72,9 +70,9 @@ def calculateDimensions(photoFile):
 
 
 def openIndexPage(pageNumber,numberOfPages):
-    """ prints out the opening of an index page and returns the current working directory and the file pointer """
+    """prints out the opening of an index page and returns the current working directory and the file pointer"""
     workingDirectory = createDirectory(options.destination + '/page' +  str(pageNumber))
-    indexFilePointer = open(workingDirectory + "/index.html","w")
+    indexFilePointer = open(os.path.join(workingDirectory,"index.html","w")
     
     print( getIndexPageHeader(pageNumber), file=indexFilePointer )
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
@@ -84,7 +82,7 @@ def openIndexPage(pageNumber,numberOfPages):
 
 
 def closeIndexPage(pageNumber,numberOfPages,indexFilePointer):
-    """ prints out the closing part of an index page """
+    """prints out the closing part of an index page"""
     print( '</tr>\n</table>\n', file=indexFilePointer)
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
     print( getIndexPageFooter(pageNumber,numberOfPages), file=indexFilePointer)
@@ -118,11 +116,11 @@ def createThumbnailImage(imagesDirectory,imageFile):
 def createImage(inFile,outFile,scale):
     """performs the actual image file creation by using the ImageMagick standalone app, convert. The file is then optimized with jpegtran"""
     cmd = "convert {0} -size {1} -quality 100 -scale {1} -strip -auto-orient {2}"
-    if os.system(cmd.format(inFile,scale,outFile)) != 0:
+    if subprocess.call(cmd.format(inFile,scale,outFile),shell=True) != 0:
         raise StandardError('Unable to scale the image with convert')
     
     cmd = 'jpegtran -copy none -optimize -perfect -outfile {0} {0}'
-    if os.system(cmd.format(outFile)) != 0:
+    if subprocess.call(cmd.format(outFile),shell=True) != 0:
         raise StandardError('Unable to optimize the image jpegtran')
     
     os.chmod(outFile,0644)
@@ -163,38 +161,26 @@ def getPaginationSection(pageNumber,numberOfPages):
     return html
 
 
-FOOTER_TEMPLATE = r'''
+def getIndexPageFooter(pageNumber,numberOfPages):
+    """Returns the footer for the index pages"""
+    return r"""
 </div>
 </div>
 
 <!--#include virtual="/includes/bottom-scripts.html" -->
 <script type="text/javascript">
-$$(function() {
-    $$('#nav-pictures').addClass('active');
-});
-
-$$('body').touchwipe({
-    wipeLeft: function()  { window.location = "$nextPage"; },
-    wipeRight: function() { window.location = "$prevPage"; }
-});
+    $(function() {
+        $('#nav-pictures').addClass('active');
+    });
 </script>
 
 </body>
 </html>
-'''
-
-def getIndexPageFooter(pageNumber,numberOfPages):
-    """Returns the index page footer"""
-    prev = pageNumber - 1
-    next = pageNumber + 1
-    
-    prevPage = "../" if prev < 1              else "../page" + str(prev) + "/"
-    nextPage = "../" if next >= numberOfPages else "../page" + str(next) + "/"
-  
-    return Template(FOOTER_TEMPLATE).substitute(prevPage=prevPage, nextPage=nextPage)
+"""
 
 
 def getIndexPageHeader(pageNumber):
+    """Returns the header for the index pages"""
     return '''<!DOCTYPE html>
 <html lang="en">
     <meta charset="utf-8">
@@ -225,7 +211,7 @@ SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Picture $index</title>
+    <title>$pictureSetTitle - Picture $index</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -305,6 +291,7 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
     <a title="Next Photo" href="{1}"><img src="/images/forward.png" width="32" height="32" alt="->"></a>'''.format(prevHTML,nextHTML)
     
     html = Template(SINGLE_PAGE_TEMPLATE).substitute(
+       pictureSetTitle=options.title,
        index=index,
        numberOfPictures=numberOfPhotos,
        lastPhotoFile=prevHTML,
@@ -315,7 +302,7 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
        width=imageFile.scaledWidth
     )
     
-    filePath = workingDirectory + '/' + str(index) + ".html"
+    filePath = os.path.join(workingDirectory,str(index) + ".html")
     with open(filePath,'w') as htmlFile:
         print(html,file=htmlFile)
         
@@ -330,6 +317,8 @@ class ImageFile(object):
     def isPortrait(self):
         return self.width > self.height
     
+    # consider making another class/named tuple to hold height and width
+
     @property
     def thumbnailWidth(self):
         return '128' if self.isPortrait() else '96'
@@ -389,4 +378,4 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    main()
+    main(args[0])
