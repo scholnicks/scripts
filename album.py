@@ -1,5 +1,5 @@
 #!/usr/bin/python -BO
-"""album:  Creates a album of JPEGs complete with thumbnails. ImageMagick's convert does the hard work
+"""album:  Creates a album of photos complete with thumbnails. ImageMagick's convert does the hard work
 
 (c) Steven Scholnick <steve@scholnick.net>
 
@@ -12,10 +12,16 @@ then you must publish your modified version under the LGPL.
 """
 
 from __future__ import print_function
-import os, sys, re, math, subprocess
+import os, sys, re, math, subprocess, shutil
 from string import Template
 
 def main(startingDirectory):
+    if os.path.exists(options.destination):
+        if options.overwrite:
+            shutil.rmtree(options.destination)
+        else:
+            raise SystemExit("{0} directory exists. Will not overwrite, --overwrite is set to false".format(options.destination))
+     
     createDirectory(options.destination)
 
     pictureFiles = []
@@ -72,7 +78,7 @@ def calculateDimensions(photoFile):
 def openIndexPage(pageNumber,numberOfPages):
     """prints out the opening of an index page and returns the current working directory and the file pointer"""
     workingDirectory = createDirectory(options.destination + '/page' +  str(pageNumber))
-    indexFilePointer = open(os.path.join(workingDirectory,"index.html","w"))
+    indexFilePointer = open(os.path.join(workingDirectory,"index.html"),"w")
     
     print( getIndexPageHeader(pageNumber), file=indexFilePointer )
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
@@ -362,6 +368,7 @@ if __name__ == '__main__':
     parser = OptionParser(usage='%prog [options] Input_Directory')
     parser.add_option('-d','--destination',dest="destination", type='string',       help='Sets the folder destination, defaults to photos')
     parser.add_option('-m','--max',        dest="max",         type='int',          help='Sets the maximum number of pictures')
+    parser.add_option('-o','--overwrite',  dest="overwrite",   action="store_true", help='Overwrites the destination directory with the new set of photos.')
     parser.add_option('-p','--page',       dest="page",        type='int',          help='Sets the maximum number of pictures per page, defaults to 50')
     parser.add_option('-q','--quiet',      dest="quiet",       action="store_true", help='Toggles quiet mode')
     parser.add_option('-r','--row-count',  dest="rowCount",    type="int",          help='Sets the row count per index page, defaults to 7')
