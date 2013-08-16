@@ -35,7 +35,7 @@ def main(startingDirectory):
     (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
     
     if options.verbose:
-        print("Number of pictures = {0}, number of pages = {1}, output directory = {2}"
+        print("Number of photos = {0}, number of pages = {1}, output directory = {2}"
               .format(len(pictureFiles), numberOfPages, options.destination))
     
     for photoIndex in xrange(0,len(pictureFiles)):
@@ -217,7 +217,7 @@ SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>$pictureSetTitle - Picture $index</title>
+    <title>$pictureSetTitle - Photo $index</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -242,7 +242,7 @@ $linkLine
 
 <div class="span10">
 <a href="index.html" title="Click on image to return to index"><img src="images/$filename" alt="$index of $numberOfPictures" height="$height" width="$width"></a>
-<p>$index of $numberOfPictures pictures</p>
+<p>$index of $numberOfPictures photos</p>
 </div>
 
 </div>
@@ -367,9 +367,9 @@ if __name__ == '__main__':
     
     parser = OptionParser(usage='%prog [options] Input_Directory')
     parser.add_option('-d','--destination',dest="destination", type='string',       help='Sets the folder destination, defaults to photos')
-    parser.add_option('-m','--max',        dest="max",         type='int',          help='Sets the maximum number of pictures')
+    parser.add_option('-m','--max',        dest="max",         type='int',          help='Sets the maximum number of photos')
     parser.add_option('-o','--overwrite',  dest="overwrite",   action="store_true", help='Overwrites the destination directory with the new set of photos.')
-    parser.add_option('-p','--page',       dest="page",        type='int',          help='Sets the maximum number of pictures per page, defaults to 50')
+    parser.add_option('-p','--page',       dest="page",        type='int',          help='Sets the maximum number of photos per page, defaults to 50')
     parser.add_option('-q','--quiet',      dest="quiet",       action="store_true", help='Toggles quiet mode')
     parser.add_option('-r','--row-count',  dest="rowCount",    type="int",          help='Sets the row count per index page, defaults to 7')
     parser.add_option('-t','--title',      dest="title",       type='string',       help='Sets the title [REQUIRED]')
