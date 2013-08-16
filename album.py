@@ -72,7 +72,7 @@ def calculateDimensions(photoFile):
 def openIndexPage(pageNumber,numberOfPages):
     """prints out the opening of an index page and returns the current working directory and the file pointer"""
     workingDirectory = createDirectory(options.destination + '/page' +  str(pageNumber))
-    indexFilePointer = open(os.path.join(workingDirectory,"index.html","w")
+    indexFilePointer = open(os.path.join(workingDirectory,"index.html","w"))
     
     print( getIndexPageHeader(pageNumber), file=indexFilePointer )
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
