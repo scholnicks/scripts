@@ -1,6 +1,5 @@
-#!/usr/bin/python -BO
-"""
-checklinks - validate links in one or more HTML files
+#!/usr/bin/python -B
+"""checklinks - validate links in one or more HTML files
 
 Requires external modules that can be installed from PyPI with:
     pip install lxml BeautifulSoup requests
@@ -8,10 +7,10 @@ Requires external modules that can be installed from PyPI with:
 (c) Steven Scholnick <steve@scholnick.net>
 
 The checklinks source code is published under version 2.1 of the GNU Lesser General Public License (LGPL).
- 
+
 In brief, this means there's no warranty and you can do anything you like with it.
-However, if you make changes to rename and redistribute those changes, 
-then you must publish your modified version under the LGPL. 
+However, if you make changes to rename and redistribute those changes,
+then you must publish your modified version under the LGPL.
 """
 
 from __future__ import print_function
@@ -21,20 +20,22 @@ import requests
 
 FORMAT="{0:80.70s} {1:10s}"
 
+
 def main():
     try:
         for filePath in args:
             processFile(filePath)
     except KeyboardInterrupt:
         print()
-    
+
     sys.exit(0)
 
 
 def processFile(filePath):
-    """ parses an HTML file """
-    if options.verbose: print("Processing file {0}".format(filePath))
-    
+    """parses an HTML file"""
+    if options.verbose:
+        print("Processing file {0}".format(filePath))
+
     with open(filePath,'r') as fp:
         soup = BeautifulSoup(fp,'lxml')
         checkLinks(soup.find_all('link'),'href')
@@ -45,7 +46,7 @@ def processFile(filePath):
 
 
 def checkLinks(tags,externalAttributeName):
-    """ checks the links in the passed in tags """
+    """checks the links in the passed in tags"""
     for t in tags:
         try:
             link = t.attrs[externalAttributeName]
@@ -56,10 +57,10 @@ def checkLinks(tags,externalAttributeName):
         except KeyError:
             # no src or href, just move onto the next tag
             pass
-            
-            
+
+
 def checkRemote(link):
-    """ checks a remote (http/https) link """
+    """checks a remote (http/https) link"""
     try:
         request = requests.get(link)
         if request.status_code != 200 or options.showGood:
@@ -69,14 +70,14 @@ def checkRemote(link):
 
 
 def checkLocal(path):
-    """ Checks for the existence of a local file on disk """
+    """Checks for the existence of a local file on disk"""
     if 'mailto' in path or path.startswith("#"):
         return
-    
+
     if path[0] == '/' and options.rootDirectory:
         root = options.rootDirectory
         path = (root[:-1] if root[-1] == '/' else root) + path
-    
+
     exists = os.path.exists(path)
     if not exists or options.showGood:
         print(FORMAT.format(path, "Good" if exists else "Missing"))
@@ -84,7 +85,7 @@ def checkLocal(path):
 
 if __name__ == '__main__':
     from optparse import OptionParser
-    
+
     parser = OptionParser(usage="%prog [options] filenames")
     parser.add_option('-i','--image',   dest="image",         action="store_true", help='Turns on image checking')
     parser.add_option('-o','--ok',      dest="showGood",      action="store_true", help='Shows the good links')
@@ -99,5 +100,8 @@ if __name__ == '__main__':
     if len(args) == 0:
         parser.print_help()
         sys.exit(1)
+
+    if options.rootDirectory:
+        options.rootDirectory = os.path.expanduser(options.rootDirectory)
 
     main()
