@@ -307,11 +307,11 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
        height=imageFile.scaledHeight,
        width=imageFile.scaledWidth
     )
-    
+
     filePath = os.path.join(workingDirectory,str(index) + ".html")
     with open(filePath,'w') as htmlFile:
         print(html,file=htmlFile)
-        
+
     os.chmod(filePath,0644)
 
 
@@ -319,10 +319,10 @@ class ImageFile(object):
     """Class that holds the image path and the image's dimensions"""
     def __init__(self,path):
         self.path = path
-    
+
     def isPortrait(self):
         return self.width > self.height
-    
+
     # consider making another class/named tuple to hold height and width
 
     @property
@@ -332,11 +332,11 @@ class ImageFile(object):
     @property
     def thumbnailHeight(self):
         return '96' if self.isPortrait() else '128'
-        
+
     @property
     def thumbnailDimension(self):
         return '{0}x{1}'.format(self.thumbnailWidth,self.thumbnailHeight)
-    
+
     @property
     def scaledWidth(self):
         return '640' if self.isPortrait() else '480'
@@ -344,7 +344,7 @@ class ImageFile(object):
     @property
     def scaledHeight(self):
         return '480' if self.isPortrait() else '640'
-        
+
     @property
     def scaledDimension(self):
         return '{0}x{1}'.format(self.scaledWidth,self.scaledHeight)
@@ -354,17 +354,17 @@ class ImageFile(object):
 
     def __str__(self):
         return self.path
-    
+
     def rfind(self,target):
         return self.path.rfind(target)
-        
+
     def __getitem__(self,key):
         return self.path.__getitem__(key)
 
 
 if __name__ == '__main__':
     from optparse import OptionParser
-    
+
     parser = OptionParser(usage='%prog [options] Input_Directory')
     parser.add_option('-d','--destination',dest="destination", type='string',       help='Sets the folder destination, defaults to photos')
     parser.add_option('-m','--max',        dest="max",         type='int',          help='Sets the maximum number of photos')

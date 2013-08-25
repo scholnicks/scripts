@@ -28,35 +28,35 @@ order by
 """
 
 def main():
-	with open(options.outputPath,"w") as fp:
-		conn = sqlite3.connect(getAddressDatabaseFile())
-		for row in conn.cursor().execute(SQL):
-			printRow(fp,row)
-		conn.close()
+    with open(options.outputPath,"w") as fp:
+        conn = sqlite3.connect(getAddressDatabaseFile())
+        for row in conn.cursor().execute(SQL):
+            printRow(fp,row)
+        conn.close()
 
-	if options.verbose: print("{0} has been created".format(options.outputPath))
-	sys.exit(0)
+    if options.verbose: print("{0} has been created".format(options.outputPath))
+    sys.exit(0)
 
 
 def printRow(fileHandle,row):
-	print("""{1} {0}
+    print("""{1} {0}
 {2}
 {3}, {4}, {5}
-	""".format(*row),file=fileHandle)
+    """.format(*row),file=fileHandle)
 
 
 def getAddressDatabaseFile():
-	files = glob.glob(os.environ['HOME'] +  "/Library/Application Support/AddressBook/Address*")
-	return files[0] if files else None
+    files = glob.glob(os.environ['HOME'] +  "/Library/Application Support/AddressBook/Address*")
+    return files[0] if files else None
 
 
 if __name__ == '__main__':
-	from optparse import OptionParser
-	
-	parser = OptionParser(usage='%prog [--output PATH] [--verbose]')
-	parser.add_option('-v','--verbose',dest="verbose", action="store_true", help='Toggles verbose')
-	parser.add_option('-o','--output',dest="outputPath", type='string', help='Output filepath')
-	parser.set_defaults(outputPath="Addresses.txt")
-	
-	options,args = parser.parse_args()
-	main()
+    from optparse import OptionParser
+    
+    parser = OptionParser(usage='%prog [--output PATH] [--verbose]')
+    parser.add_option('-v','--verbose',dest="verbose", action="store_true", help='Toggles verbose')
+    parser.add_option('-o','--output',dest="outputPath", type='string', help='Output filepath')
+    parser.set_defaults(outputPath="Addresses.txt")
+    
+    options,args = parser.parse_args()
+    main()
