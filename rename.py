@@ -1,4 +1,6 @@
-#!/usr/bin/python -BO
+#!/usr/bin/python -B
+# -*- coding: utf-8 -*-
+
 """
 rename:  Renames files in powerful ways
 
@@ -15,6 +17,7 @@ from __future__ import print_function
 import os, sys, re
 
 MINIMUM_NUMBER_LENGTH = 4
+
 
 def main():
     if options.verbose: print("Renaming {}".format(", ".join(args)))

@@ -1,4 +1,6 @@
-#!/usr/bin/python -BO
+#!/usr/bin/python -B
+# -*- coding: utf-8 -*-
+
 """
 ce: Mac Contacts Exporter
 

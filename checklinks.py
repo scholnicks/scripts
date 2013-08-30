@@ -1,4 +1,6 @@
 #!/usr/bin/python -B
+# -*- coding: utf-8 -*-
+
 """checklinks - validate links in one or more HTML files
 
 Requires external modules that can be installed from PyPI with:

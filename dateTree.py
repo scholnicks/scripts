@@ -1,9 +1,11 @@
-#!/usr/bin/python -BO
+#!/usr/bin/python -B
+# -*- coding: utf-8 -*-
+
 """
-dateTree:  Creates a tree of pictures separated into date directories
-           All duplicates will be removed.
-           All filenames will be converted to all lowercase
-           Only JPEGs will be copied
+dateTree: Creates a tree of pictures separated into date directories
+          All duplicates will be removed.
+          All filenames will be converted to all lowercase
+          Only JPEGs will be copied
 
 Requires external modules that can be installed from PyPI with:
     pip install pillow
@@ -25,6 +27,7 @@ from PIL import Image
 from PIL.ExifTags import TAGS
 
 DATE_FORMAT = '%Y-%m-%d'
+
 
 def main():
     try:

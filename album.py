@@ -1,5 +1,8 @@
-#!/usr/bin/python -BO
-"""album:  Creates a album of photos complete with thumbnails. ImageMagick's convert does the hard work
+#!/usr/bin/python -B
+# -*- coding: utf-8 -*-
+
+"""
+album:  Creates a album of photos complete with thumbnails. ImageMagick's convert does the hard work
 
 (c) Steven Scholnick <steve@scholnick.net>
 
