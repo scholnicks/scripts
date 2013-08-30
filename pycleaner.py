@@ -2,7 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-pycleaner.py - cleans Python scripts
+pycleaner [--verbose] FILES DIRECTORIES
+
+The following cleaning is performed:
+
+* All ending whitespace is removed
+* All tabs are converted to 4 spaces
+* Spaces before a : are removed
 
 (c) Steven Scholnick <steve@scholnick.net>
 
@@ -18,18 +24,27 @@ import os, sys, re
 
 
 def main():
-    for filePath in args:
-        filePath = os.path.abspath(filePath)
-
-        if options.verbose:
-            print("Procesing {0}".format(filePath))
-
-        processFile(filePath)
+    for path in args:
+        path = os.path.abspath(path)
+        if os.path.isdir(path):
+            processDirectory(path)
+        else:
+            processFile(filePath)
 
     sys.exit(0)
 
 
+def processDirectory(startingDirectory):
+    for root, dirs, files in os.walk(startingDirectory):
+        for f in files:
+            if f.endswith(".py"):
+                processFile(os.path.join(root,f))
+
+
 def processFile(filePath):
+    if options.verbose:
+        print("Cleaning {0}".format(filePath))
+
     lines = []
     with open(filePath,'r') as inStream:
         for line in inStream:
@@ -49,7 +64,7 @@ def processFile(filePath):
 if __name__ == '__main__':
     from optparse import OptionParser
 
-    parser = OptionParser(usage="%prog [options] filenames")
+    parser = OptionParser(usage=__doc__)
     parser.add_option('-v','--verbose',dest="verbose", action="store_true", help='Toggles verbose')
 
     options,args = parser.parse_args()
