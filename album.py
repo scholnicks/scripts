@@ -24,50 +24,50 @@ def main(startingDirectory):
             shutil.rmtree(options.destination)
         else:
             raise SystemExit("{0} directory exists. Will not overwrite, --overwrite is set to false".format(options.destination))
-     
+
     createDirectory(options.destination)
 
     pictureFiles = []
     for root, dirs, files in os.walk(os.path.abspath(startingDirectory)):
         pictureFiles += [ImageFile(os.path.join(root,f)) for f in files if f.lower().endswith(".jpg")]
-        
+
     pageNumber    = 1
     rowCount      = 0
     numberOfPages = int( math.ceil(float(len(pictureFiles)) / float(options.page)) )
 
     (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
-    
+
     if options.verbose:
         print("Number of photos = {0}, number of pages = {1}, output directory = {2}"
               .format(len(pictureFiles), numberOfPages, options.destination))
-    
+
     for photoIndex in xrange(0,len(pictureFiles)):
         imageFile = pictureFiles[photoIndex]
         imageFile.index = photoIndex
         calculateDimensions(imageFile)
-            
+
         if photoIndex > 0 and (photoIndex % options.page) == 0:
             closeIndexPage(pageNumber,numberOfPages,indexFilePointer)
             pageNumber += 1
             rowCount   = 0
             (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
-            
+
         convertImage(imageFile,workingDirectory)
-        
+
         if rowCount > 0 and (rowCount % options.rowCount) == 0:
             print('</tr>\n<tr>', file=indexFilePointer)
-        
+
         print('    <td><a class="picture" href="{0}.html"><img src="thumbnails/{1}" width="{2}" height="{3}"></a></td>'
               .format(photoIndex + 1,
                       os.path.basename(imageFile.path),
                       imageFile.thumbnailWidth,
                       imageFile.thumbnailHeight)
               ,file=indexFilePointer)
-        
+
         createIndividualHTMLFile(workingDirectory,imageFile,len(pictureFiles),pageNumber)
-        
+
         rowCount += 1
-    
+
     closeIndexPage(pageNumber,numberOfPages,indexFilePointer)
     sys.exit(0)
 
@@ -82,11 +82,11 @@ def openIndexPage(pageNumber,numberOfPages):
     """prints out the opening of an index page and returns the current working directory and the file pointer"""
     workingDirectory = createDirectory(options.destination + '/page' +  str(pageNumber))
     indexFilePointer = open(os.path.join(workingDirectory,"index.html"),"w")
-    
+
     print( getIndexPageHeader(pageNumber), file=indexFilePointer )
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
     print( '\n<table>\n<tr>', file=indexFilePointer)
-    
+
     return (workingDirectory,indexFilePointer)
 
 
@@ -102,10 +102,10 @@ def closeIndexPage(pageNumber,numberOfPages,indexFilePointer):
 def convertImage(imageFile,workingDirectory):
     """Creates both the standard and thumbnail images in the proper directories with the correct permissions"""
     if not options.quiet: print("Processing {}".format(imageFile))
-    
-    imagesDirectory     = createDirectory(workingDirectory + '/images',True) 
-    thumbnailsDirectory = createDirectory(workingDirectory + '/thumbnails',True) 
-    
+
+    imagesDirectory     = createDirectory(workingDirectory + '/images',True)
+    thumbnailsDirectory = createDirectory(workingDirectory + '/thumbnails',True)
+
     createStandardImage(imagesDirectory,imageFile)
     createThumbnailImage(thumbnailsDirectory,imageFile)
 
@@ -127,11 +127,11 @@ def createImage(inFile,outFile,scale):
     cmd = "convert {0} -size {1} -quality 100 -scale {1} -strip -auto-orient {2}"
     if subprocess.call(cmd.format(inFile,scale,outFile),shell=True) != 0:
         raise StandardError('Unable to scale the image with convert')
-    
+
     cmd = 'jpegtran -copy none -optimize -perfect -outfile {0} {0}'
     if subprocess.call(cmd.format(outFile),shell=True) != 0:
         raise StandardError('Unable to optimize the image jpegtran')
-    
+
     os.chmod(outFile,0644)
 
 
@@ -151,12 +151,12 @@ def createDirectory(path,allowExisting=False):
 def getPaginationSection(pageNumber,numberOfPages):
     """Returns the pagination section for the index files"""
     html = '<div class="pagination pagination-right">\n<ul>\n'
-    
+
     if pageNumber == 1:
         html += '    <li class="disabled"><a href="#">&laquo;</a></li>\n'
     else:
         html += '    <li><a href="../page{0}/">&laquo;</a></li>\n'.format(pageNumber-1)
-   
+
     for number in xrange(1,numberOfPages+1):
         html += '    <li{0}><a href="../page{1}/">{1}</a></li>\n'.format(' class="active"' if number == pageNumber else '', number)
 
@@ -164,9 +164,9 @@ def getPaginationSection(pageNumber,numberOfPages):
         html += '    <li class="disabled"><a href="#">&raquo;</a></li>\n'
     else:
         html += '    <li><a href="../page{0}/">&raquo;</a></li>\n'.format(pageNumber+1)
-        
+
     html += '</ul>\n</div>'
-    
+
     return html
 
 
@@ -193,14 +193,14 @@ def getIndexPageHeader(pageNumber):
     return '''<!DOCTYPE html>
 <html lang="en">
     <meta charset="utf-8">
-    <title>{1} : Page {0}</title>
+    <title>{1}: Page {0}</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="/css/base.css" rel="stylesheet">
-    <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>  
-    <script type="text/javascript" src="/js/jquery.js"></script>  
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/js/jquery.js"></script>
     <!--#include virtual="/includes/ieshiv" -->
 </head>
 <body>
@@ -212,7 +212,7 @@ def getIndexPageHeader(pageNumber):
 <div class="container-fluid">
 <div class="span9">
 
-<div class="page-header text-center"><h2>{1} : Page {0}</h2></div>
+<div class="page-header text-center"><h2>{1}: Page {0}</h2></div>
 '''.format(pageNumber,options.title)
 
 
@@ -227,8 +227,8 @@ SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
     <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="/css/base.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/css/picture-bootstrap.css">
-    <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>  
-    <script type="text/javascript" src="/js/jquery.js"></script>  
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/js/jquery.js"></script>
     <!--#include virtual="/includes/ieshiv" -->
 </head>
 <body>
@@ -272,13 +272,13 @@ $$('body').touchwipe({
 def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumber):
     """Creates an individual HTML file"""
     index = imageFile.index + 1
-    
+
     prev = index - 1
     next = index + 1
-    
+
     prevHTML = ''
     nextHTML = ''
-    
+
     if prev == 0:
         prevHTML = 'index.html'
     else:
@@ -286,7 +286,7 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
             prevHTML = '../page{0}/{1}.html'.format((pageNumber-1),prev)
         else:
             prevHTML = str(prev) + '.html'
-            
+
     if next > numberOfPhotos:
         nextHTML = 'index.html'
     else:
@@ -294,11 +294,11 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
             nextHTML = '../page{0}/{1}.html'.format((pageNumber+1),next)
         else:
             nextHTML = str(next) + ".html"
-            
+
     linkLine = '''    <a title="Previous Photo" href="{0}"><img src="/images/reverse.png" width="32" height="32" alt="<-"></a>
-    <a title="Return to Index" href="index.html"><img src="/images/stop.png" width="32" height="32" alt="||"></a> 
+    <a title="Return to Index" href="index.html"><img src="/images/stop.png" width="32" height="32" alt="||"></a>
     <a title="Next Photo" href="{1}"><img src="/images/forward.png" width="32" height="32" alt="->"></a>'''.format(prevHTML,nextHTML)
-    
+
     html = Template(SINGLE_PAGE_TEMPLATE).substitute(
        pictureSetTitle=options.title,
        index=index,
@@ -352,7 +352,7 @@ class ImageFile(object):
     def scaledDimension(self):
         return '{0}x{1}'.format(self.scaledWidth,self.scaledHeight)
 
-    # duck typing methods. this class will be used in place 
+    # duck typing methods. this class will be used in place
     # of a str in os.path.join() and open() calls
 
     def __str__(self):
@@ -381,7 +381,7 @@ if __name__ == '__main__':
 
     options,args = parser.parse_args()
 
-    if options.verbose: 
+    if options.verbose:
         options.quiet = False
 
     if len(args) < 1 or not options.title:

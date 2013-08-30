@@ -7,15 +7,15 @@ ce: Mac Contacts Exporter
 (c) Steven Scholnick <steve@scholnick.net>
 
 The ce source code is published under version 2.1 of the GNU Lesser General Public License (LGPL).
- 
+
 In brief, this means there's no warranty and you can do anything you like with it.
-However, if you make changes to rename and redistribute those changes, 
-then you must publish your modified version under the LGPL. 
+However, if you make changes to rename and redistribute those changes,
+then you must publish your modified version under the LGPL.
 
 """
 
 from __future__ import print_function
-import os, sys, glob 
+import os, sys, glob
 import sqlite3
 
 SQL = """select
@@ -23,9 +23,9 @@ SQL = """select
 from
         ZABCDRECORD R, ZABCDPOSTALADDRESS P
 where
-        R.Z_PK = P.ZOWNER and 
+        R.Z_PK = P.ZOWNER and
         R.ZLASTNAME is not null and P.ZCITY is not null and P.ZZIPCODE is not null
-order by 
+order by
         1, 2
 """
 
@@ -54,11 +54,11 @@ def getAddressDatabaseFile():
 
 if __name__ == '__main__':
     from optparse import OptionParser
-    
+
     parser = OptionParser(usage='%prog [--output PATH] [--verbose]')
     parser.add_option('-v','--verbose',dest="verbose", action="store_true", help='Toggles verbose')
     parser.add_option('-o','--output',dest="outputPath", type='string', help='Output filepath')
     parser.set_defaults(outputPath="Addresses.txt")
-    
+
     options,args = parser.parse_args()
     main()

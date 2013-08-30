@@ -13,10 +13,10 @@ Requires external modules that can be installed from PyPI with:
 (c) Steven Scholnick <steve@scholnick.net>
 
 The dateTree source code is published under version 2.1 of the GNU Lesser General Public License (LGPL).
- 
+
 In brief, this means there's no warranty and you can do anything you like with it.
-However, if you make changes to dateTree and redistribute those changes, 
-then you must publish your modified version under the LGPL. 
+However, if you make changes to dateTree and redistribute those changes,
+then you must publish your modified version under the LGPL.
 """
 
 from __future__ import print_function
@@ -33,17 +33,17 @@ def main():
     try:
         pictureFiles    = getPictureFiles(os.path.abspath(args[0]))
         destinationRoot = createDirectory(options.destination)
-        
+
         for p in pictureFiles:
-            if not options.quiet: 
+            if not options.quiet:
                 print("Processing {0}".format(p))
-            
+
             directoryName = getDate(p)
             destinationDirectory = createDirectory(os.path.join(destinationRoot,directoryName), True)
             shutil.copyfile(p, os.path.join(destinationDirectory,os.path.basename(p)))
     except KeyboardInterrupt:
         print()
-    
+
     sys.exit(0)
 
 
@@ -70,7 +70,7 @@ def getCreationDate(filePath):
         if TAGS[k] == 'DateTimeOriginal':
             dateTime = datetime.datetime.strptime(v,'%Y:%m:%d %H:%M:%S')
             return dateTime.strftime(DATE_FORMAT)
-    
+
     raise TypeError("Unable to read the DateTimeOriginal")
 
 
@@ -92,7 +92,7 @@ def createDirectory(path,allowExisting=False):
 
 if __name__ == '__main__':
     from optparse import OptionParser
-    
+
     parser = OptionParser(usage='%prog [options] Input_Directory')
     parser.add_option('-d','--destination',dest="destination", type='string', help='Sets the folder destination [REQUIRED]')
     parser.add_option('-q','--quiet',dest="quiet", action="store_true", help='Toggles quiet mode')
