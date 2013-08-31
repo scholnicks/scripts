@@ -8,7 +8,7 @@ The following cleaning is performed:
 
 * All ending whitespace is removed
 * All tabs are converted to 4 spaces
-* Spaces before a : are removed
+* Spaces before a: are removed
 
 (c) Steven Scholnick <steve@scholnick.net>
 
@@ -24,6 +24,7 @@ import os, sys, re
 
 
 def main():
+    """main method"""
     for path in args:
         path = os.path.abspath(path)
         if os.path.isdir(path):
@@ -35,6 +36,7 @@ def main():
 
 
 def processDirectory(startingDirectory):
+    """Cleans all .py files in the startingDirectory and any .py files in any child directories"""
     for root, dirs, files in os.walk(startingDirectory):
         for f in files:
             if f.endswith(".py"):
@@ -42,6 +44,7 @@ def processDirectory(startingDirectory):
 
 
 def processFile(filePath):
+    """cleans a single .py file"""
     if options.verbose:
         print("Cleaning {0}".format(filePath))
 
@@ -56,9 +59,6 @@ def processFile(filePath):
     with open(filePath,'w') as outStream:
         for line in lines:
             print(line,file=outStream)
-
-            if options.verbose:
-                print(line)
 
 
 if __name__ == '__main__':
