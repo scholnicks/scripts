@@ -9,6 +9,7 @@ The following cleaning is performed:
 * All ending whitespace is removed
 * All tabs are converted to 4 spaces
 * Spaces before a: are removed
+* Removes all trailing blank lines
 
 (c) Steven Scholnick <steve@scholnick.net>
 
@@ -30,7 +31,7 @@ def main():
         if os.path.isdir(path):
             processDirectory(path)
         else:
-            processFile(filePath)
+            processFile(path)
 
     sys.exit(0)
 
@@ -56,10 +57,27 @@ def processFile(filePath):
             line = re.sub(r'\s+:',':',line)
             lines.append(line)
 
+    count = countTrailingBlankLines(lines)
+
+    if count > 0:
+        lines = lines[:len(lines) - count]
+
     with open(filePath,'w') as outStream:
         for line in lines:
             print(line,file=outStream)
 
+
+def countTrailingBlankLines(lines):
+    """Returns the number of trailing blank lines"""
+    count = 0
+    for line in reversed(lines):
+        line = line.rstrip()
+        if line:
+            break
+        else:
+            count = count + 1
+
+    return count    
 
 if __name__ == '__main__':
     from optparse import OptionParser
