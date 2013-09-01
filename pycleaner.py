@@ -8,7 +8,7 @@ The following cleaning is performed:
 
 * All ending whitespace is removed
 * All tabs are converted to 4 spaces
-* Spaces before a: are removed
+* Spaces before a colon are removed
 * Removes all trailing blank lines
 
 (c) Steven Scholnick <steve@scholnick.net>
@@ -77,7 +77,8 @@ def countTrailingBlankLines(lines):
         else:
             count = count + 1
 
-    return count    
+    return count
+
 
 if __name__ == '__main__':
     from optparse import OptionParser
