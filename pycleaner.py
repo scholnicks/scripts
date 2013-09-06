@@ -6,10 +6,10 @@ pycleaner [--verbose] FILES DIRECTORIES
 
 The following cleaning is performed:
 
-* All ending whitespace is removed
-* All tabs are converted to 4 spaces
+* Ending whitespace is removed
+* Tabs are converted to 4 spaces
 * Spaces before a colon are removed
-* Removes all trailing blank lines
+* Trailing blank lines
 
 (c) Steven Scholnick <steve@scholnick.net>
 
