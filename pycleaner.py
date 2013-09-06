@@ -9,7 +9,7 @@ The following cleaning is performed:
 * Ending whitespace is removed
 * Tabs are converted to 4 spaces
 * Spaces before a colon are removed
-* Trailing blank lines
+* Trailing blank lines are removed
 
 (c) Steven Scholnick <steve@scholnick.net>
 
