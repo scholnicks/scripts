@@ -1,8 +1,7 @@
 #!/usr/bin/python -B
 # -*- coding: utf-8 -*-
 
-"""
-album:  Creates a album of photos complete with thumbnails. ImageMagick's convert does the hard work
+"""album:  Creates a album of photos complete with thumbnails. ImageMagick's convert does the hard work
 
 (c) Steven Scholnick <steve@scholnick.net>
 
@@ -17,6 +16,8 @@ then you must publish your modified version under the LGPL.
 from __future__ import print_function
 import os, sys, re, math, subprocess, shutil
 from string import Template
+
+numberOfPages = 0
 
 def main(startingDirectory):
     if os.path.exists(options.destination):
@@ -150,6 +151,9 @@ def createDirectory(path,allowExisting=False):
 
 def getPaginationSection(pageNumber,numberOfPages):
     """Returns the pagination section for the index files"""
+    if numberOfPages == 1:
+        return ''
+        
     html = '<div class="pagination pagination-right">\n<ul>\n'
 
     if pageNumber == 1:
@@ -189,11 +193,13 @@ def getIndexPageFooter(pageNumber,numberOfPages):
 
 
 def getIndexPageHeader(pageNumber):
+    pageTitle = options.title if numberOfPages == 1 else "{0}: Page {1}".format(options.title,pageNumber)
+    
     """Returns the header for the index pages"""
     return '''<!DOCTYPE html>
 <html lang="en">
     <meta charset="utf-8">
-    <title>{1}: Page {0}</title>
+    <title>{0}</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -212,8 +218,8 @@ def getIndexPageHeader(pageNumber):
 <div class="container-fluid">
 <div class="span9">
 
-<div class="page-header text-center"><h2>{1}: Page {0}</h2></div>
-'''.format(pageNumber,options.title)
+<div class="page-header text-center"><h2>{0}</h2></div>
+'''.format(pageTitle)
 
 
 SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
