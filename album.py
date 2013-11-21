@@ -153,7 +153,7 @@ def getPaginationSection(pageNumber,numberOfPages):
     """Returns the pagination section for the index files"""
     if numberOfPages == 1:
         return ''
-        
+
     html = '<div class="pagination pagination-right">\n<ul>\n'
 
     if pageNumber == 1:
@@ -194,7 +194,7 @@ def getIndexPageFooter(pageNumber,numberOfPages):
 
 def getIndexPageHeader(pageNumber):
     pageTitle = options.title if numberOfPages == 1 else "{0}: Page {1}".format(options.title,pageNumber)
-    
+
     """Returns the header for the index pages"""
     return '''<!DOCTYPE html>
 <html lang="en">
