@@ -20,15 +20,12 @@ use File::Find;
 
 print "\n";
 
-if( ! scalar(@ARGV) )
-{
+if (! scalar(@ARGV) ) {
 	reportSize( cwd() );
 }
-else
-{
-	foreach( @ARGV )
-	{
-		reportSize( $_ );
+else {
+	foreach (@ARGV) {
+		reportSize($_);
 	}
 }
 
@@ -36,8 +33,7 @@ print "\n";
 
 exit 0;
 
-sub reportSize
-{
+sub reportSize {
 	my $path  = shift;
 	my $file  = 0;
 	my $sizeb = 0;
@@ -47,5 +43,5 @@ sub reportSize
 	
 	my $sizemb = int ($sizeb / 1024 / 1024);
 	
-	print "$path = $file files using $sizemb megs of disc space\n";
+	print "$path = $file files using $sizemb megs of disk space\n";
 }
