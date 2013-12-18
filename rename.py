@@ -19,14 +19,18 @@ import os, sys, re
 MINIMUM_NUMBER_LENGTH = 4
 
 
-def main():
-    if options.verbose: print("Renaming {}".format(", ".join(args)))
+def main(files):
+    """Main Method"""
+    if options.verbose:
+        print("Renaming {}".format(", ".join(files)))
 
-    for fileName in args:
+    for fileName in files:
         renameFile(fileName)
 
+    sys.exit(0)
 
 def renameFile(fileName):
+    """Renames an individual file"""
     if not os.path.exists(fileName):
         print("{} does not exist, skipping.".format(fileName),file=sys.stderr)
         return
@@ -59,15 +63,17 @@ def renameFile(fileName):
 
 
 def substitute(fileName,pattern):
+    """Performs the pattern substitution"""
     try:
         (old,new) = re.match(r'^(.*)/(.*)$',pattern).groups()
         return re.sub(old,new,fileName)
     except AttributeError:
-        print("rename: Illegal substitute pattern",file=sys.stderr)
+        print("rename: Illegal substitute pattern. Pattern must be old/new",file=sys.stderr)
         sys.exit(-1)
 
 
 def fixNumbers(fileName,delimiter):
+    """Fixes the nnumeric part of a filename"""
     if delimiter not in fileName:
         return fileName
 
@@ -83,25 +89,26 @@ def fixNumbers(fileName,delimiter):
 
 
 if __name__ == '__main__':
-    from optparse import OptionParser
+    import argparse
 
-    parser = OptionParser(usage="%prog [options] filenames")
-    parser.add_option('-a','--append',dest="append", type='string', help='Append')
-    parser.add_option('-f','--fix-numbers',dest="fixNumbers", type='string', help='fix numbers')
-    parser.add_option('-l','--lower',dest="lower", action="store_true", help='Toggles lower')
-    parser.add_option('-p','--prepend',dest="prepend", type='string', help='Prepend')
-    parser.add_option('-r','--remove',dest="remove", type='string', help='Remove')
-    parser.add_option('-s','--substitute',dest="substitute", type='string', help='Substitute')
-    parser.add_option('-t','--test',dest="test", action="store_true", help='Toggles test')
-    parser.add_option('-v','--verbose',dest="verbose", action="store_true", help='Toggles verbose')
+    parser = argparse.ArgumentParser(description='Renames files in powerful ways')
+    parser.add_argument('-a','--append',     dest="append",     action="store",      help='Appends a suffix to each filename')
+    parser.add_argument('-f','--fix-numbers',dest="fixNumbers", action="store",      help='Fix numbers. Ensures that a minimum number of leading zeroes is present")
+    parser.add_argument('-l','--lower',      dest="lower",      action="store_true", help='Translates the filenames to lowercase')
+    parser.add_argument('-p','--prepend',    dest="prepend",    action="store",      help='Prepend a prefix to each filename')
+    parser.add_argument('-r','--remove',     dest="remove",     action="store",      help='Removes a pattern')
+    parser.add_argument('-s','--substitute', dest="substitute", action="store",      help='Substitutes a pattern (old/new)')
+    parser.add_argument('-t','--test',       dest="test",       action="store_true", help='Toggles test mode (pretends to rename only)')
+    parser.add_argument('-v','--verbose',    dest="verbose",    action="store_true", help='Toggles verbose')
+    parser.add_argument('files', action="store")
 
-    options,args = parser.parse_args()
+    options = parser.parse_args()
 
     if options.test:
         options.verbose = True
 
-    if len(args) == 0:
+    if len(options.files) == 0:
         parser.print_help()
         sys.exit(1)
 
-    main()
+    main(options.files)
