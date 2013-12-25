@@ -1,0 +1,65 @@
+#!/usr/bin/python -B
+# -*- coding: utf-8 -*-
+
+"""is-drop-current: Checks installed Dropbox version against latest version available.
+
+Inspired by: https://github.com/tjluoma/is-dropbox-current (zsh version)
+"""
+
+from __future__ import print_function
+import os, sys, re
+import feedparser
+
+STABLE_BUILD = 'New Stable Build: '
+
+def main():
+    installed_version = get_installed_version()
+
+    if options.debug:
+        print("Installed version : {0}".format(installed_version))
+
+    latest_version = get_latest_version()
+
+    if options.debug:
+        print("Latest version (from RSS) : {0}".format(latest_version))
+
+    if installed_version != latest_version:
+        message = "{0} is installed. Latest version available is {1}".format(installed_version,latest_version)
+        print(message)
+        if options.terminal_notifier:
+            os.system("terminal-notifier 'message'")
+    else:
+        if options.debug:
+            print("Versions match: {0}".format(installed_version))
+
+    sys.exit(0)
+
+
+def get_installed_version():
+    with open('/Applications/Dropbox.app/Contents/Info.plist') as fp:
+        plist = [line.strip() for line in fp]
+
+    for i in xrange(0,len(plist)):
+        if 'CFBundleShortVersionString' in plist[i]:
+            return re.sub(r'[^0-9.]+','',plist[i+1]).strip()
+
+    return None
+
+
+def get_latest_version():
+    parser = feedparser.parse("https://www.dropbox.com/release_notes/rss.xml")
+    for e in parser.entries:
+        if e.title.startswith(STABLE_BUILD):
+            return e.title[len(STABLE_BUILD):].strip()
+
+    return None
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Checks installed Dropbox version against latest version available')
+    parser.add_argument('-d','--debug', dest="debug", action="store_true", help='Toggles debug mode')
+    parser.add_argument('-t','--terminal_notifier', dest="terminal_notifier", action="store_true", help='Toggles terminal notifier mode')
+    options = parser.parse_args()
+
+    main()
