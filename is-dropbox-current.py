@@ -7,7 +7,7 @@ Inspired by: https://github.com/tjluoma/is-dropbox-current (zsh version)
 """
 
 from __future__ import print_function
-import os, sys, re
+import sys, re
 import feedparser
 
 STABLE_BUILD = 'New Stable Build: '
@@ -24,10 +24,7 @@ def main():
         print("Latest version (from RSS) : {0}".format(latest_version))
 
     if installed_version != latest_version:
-        message = "{0} is installed. Latest version available is {1}".format(installed_version,latest_version)
-        print(message)
-        if options.terminal_notifier:
-            os.system("terminal-notifier 'message'")
+        print("{0} is installed. Latest version available is {1}".format(installed_version,latest_version))
     else:
         if options.debug:
             print("Versions match: {0}".format(installed_version))
@@ -59,7 +56,6 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Checks installed Dropbox version against latest version available')
     parser.add_argument('-d','--debug', dest="debug", action="store_true", help='Toggles debug mode')
-    parser.add_argument('-t','--terminal_notifier', dest="terminal_notifier", action="store_true", help='Toggles terminal notifier mode')
     options = parser.parse_args()
 
     main()
