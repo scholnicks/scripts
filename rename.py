@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Renames files in powerful ways')
     parser.add_argument('-a','--append',     dest="append",     action="store",      help='Appends a suffix to each filename')
-    parser.add_argument('-f','--fix-numbers',dest="fixNumbers", action="store",      help='Fix numbers. Ensures that a minimum number of leading zeroes is present")
+    parser.add_argument('-f','--fix-numbers',dest="fixNumbers", action="store",      help='Fix numbers. Ensures that a minimum number of leading zeroes is present')
     parser.add_argument('-l','--lower',      dest="lower",      action="store_true", help='Translates the filenames to lowercase')
     parser.add_argument('-p','--prepend',    dest="prepend",    action="store",      help='Prepend a prefix to each filename')
     parser.add_argument('-r','--remove',     dest="remove",     action="store",      help='Removes a pattern')
