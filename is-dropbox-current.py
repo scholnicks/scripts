@@ -50,7 +50,7 @@ def get_installed_version():
         if 'CFBundleShortVersionString' in plist[i]:
             return re.sub(r'[^0-9.]+','',plist[i+1]).strip()
 
-    return None
+    raise RuntimeError("Unable to determine the installed version number")
 
 
 def get_latest_version():
@@ -60,7 +60,7 @@ def get_latest_version():
         if e.title.startswith(STABLE_BUILD):
             return e.title[len(STABLE_BUILD):].strip()
 
-    return None
+    raise RuntimeError("Unable to determine the latest version number")
 
 
 if __name__ == '__main__':
