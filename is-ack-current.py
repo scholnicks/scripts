@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-is-drop-current: Checks installed ack version against latest version available.
+is-ack-current: Checks installed ack version against latest version available.
 
 (c) Steven Scholnick <steve@scholnick.net>
 
-The is-drop-current source code is published under version 2.1 of the GNU Lesser General Public License (LGPL).
+The is-ack-current source code is published under version 2.1 of the GNU Lesser General Public License (LGPL).
 
 In brief, this means there's no warranty and you can do anything you like with it.
 However, if you make changes to rename and redistribute those changes,
