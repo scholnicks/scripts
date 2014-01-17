@@ -21,6 +21,7 @@ import feedparser
 
 STABLE_BUILD = 'New Stable Build: '
 
+
 def main():
     '''main method'''
     installed_version = get_installed_version()
