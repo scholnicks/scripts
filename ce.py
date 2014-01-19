@@ -30,17 +30,20 @@ order by
 """
 
 def main():
+    '''main method'''
     with open(options.outputPath,"w") as fp:
-        conn = sqlite3.connect(getAddressDatabaseFile())
-        for row in conn.cursor().execute(SQL):
-            printRow(fp,row)
-        conn.close()
+        with sqlite3.connect(getAddressDatabaseFile()) as conn:
+            for row in conn.cursor().execute(SQL):
+                printRow(fp,row)
 
-    if options.verbose: print("{0} has been created".format(options.outputPath))
+    if options.verbose: 
+        print("{0} has been created".format(options.outputPath))
+    
     sys.exit(0)
 
 
 def printRow(fileHandle,row):
+    '''prints a single row of data'''
     print("""{1} {0}
 {2}
 {3}, {4}, {5}
@@ -48,6 +51,7 @@ def printRow(fileHandle,row):
 
 
 def getAddressDatabaseFile():
+    '''Returns the path to the addressbook SQLite database file'''
     files = glob.glob(os.environ['HOME'] +  "/Library/Application Support/AddressBook/Address*")
     return files[0] if files else None
 
