@@ -17,6 +17,7 @@ then you must publish your modified version under the LGPL.
 
 from __future__ import print_function
 import sys, re
+import plistlib
 import feedparser
 
 STABLE_BUILD = 'New Stable Build: '
@@ -45,14 +46,8 @@ def main():
 
 def get_installed_version():
     '''Returns the current installed version by parsing Dropbox's client Info.plist'''
-    with open('/Applications/Dropbox.app/Contents/Info.plist') as fp:
-        plist = [line.strip() for line in fp]
-
-    for i in xrange(0,len(plist)):
-        if 'CFBundleShortVersionString' in plist[i]:
-            return re.sub(r'[^0-9.]+','',plist[i+1]).strip()
-
-    raise RuntimeError("Unable to determine the installed version number")
+    plist_data = plistlib.readPlist('/Applications/Dropbox.app/Contents/Info.plist')
+    return re.sub(r'[^0-9.]+','',plist_data['CFBundleShortVersionString'].strip())
 
 
 def get_latest_version():
