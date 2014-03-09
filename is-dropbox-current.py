@@ -37,7 +37,7 @@ def main():
 
     if installed_version != latest_version:
         print("{0} is installed. Latest version available is {1}".format(installed_version,latest_version))
-        print('\tDownload latest version from: https://www.dropbox.com/install\n')
+        print('\tDownload latest version from: https://www.dropbox.com/release_notes\n')
     elif options.debug:
         print("Versions match: {0}".format(installed_version))
 
