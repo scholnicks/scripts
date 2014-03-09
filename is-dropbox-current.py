@@ -20,7 +20,8 @@ import sys, re
 import plistlib
 import feedparser
 
-STABLE_BUILD = 'New Stable Build: '
+STABLE_BUILD     = 'New Stable Build: '
+DOWNLOAD_MESSAGE = "\tDownload latest version from https://dl-web.dropbox.com/u/17/Dropbox%20{0}.dmg\n"
 
 
 def main():
@@ -37,7 +38,7 @@ def main():
 
     if installed_version != latest_version:
         print("{0} is installed. Latest version available is {1}".format(installed_version,latest_version))
-        print('\tDownload latest version from: https://www.dropbox.com/release_notes\n')
+        print(DOWNLOAD_MESSAGE.format(latest_version))
     elif options.debug:
         print("Versions match: {0}".format(installed_version))
 
