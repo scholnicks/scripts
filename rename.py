@@ -22,7 +22,7 @@ MINIMUM_NUMBER_LENGTH = 4
 def main(files):
     """Main Method"""
     if options.verbose:
-        print("Renaming {}".format(", ".join(files)))
+        print("Renaming {0}".format(", ".join(files)))
 
     for fileName in files:
         renameFile(fileName)
@@ -32,7 +32,7 @@ def main(files):
 def renameFile(fileName):
     """Renames an individual file"""
     if not os.path.exists(fileName):
-        print("{} does not exist, skipping.".format(fileName),file=sys.stderr)
+        print("{0} does not exist, skipping.".format(fileName),file=sys.stderr)
         return
 
     newFileName = fileName
@@ -56,7 +56,7 @@ def renameFile(fileName):
         newFileName = substitute(newFileName,options.substitute)
 
     if newFileName != fileName:
-        if options.verbose: print("Renaming {} to {}".format(fileName,newFileName))
+        if options.verbose: print("Renaming {0} to {1}".format(fileName,newFileName))
 
         if not options.test:
             os.rename(fileName,newFileName)
@@ -82,6 +82,7 @@ def fixNumbers(fileName,delimiter):
 
     sequenceValue = number
 
+    # TODO: rewrite using the * operator for strings
     for i in xrange(len(number),MINIMUM_NUMBER_LENGTH):
         sequenceValue = "0" + sequenceValue
 
