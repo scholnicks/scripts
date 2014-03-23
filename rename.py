@@ -100,15 +100,11 @@ if __name__ == '__main__':
     parser.add_argument('-s','--substitute', dest="substitute", action="store",      help='Substitutes a pattern (old/new)')
     parser.add_argument('-t','--test',       dest="test",       action="store_true", help='Toggles test mode (pretends to rename only)')
     parser.add_argument('-v','--verbose',    dest="verbose",    action="store_true", help='Toggles verbose')
-    parser.add_argument('files', action="store")
+    parser.add_argument('files', nargs="+", type=str)
 
     options = parser.parse_args()
 
     if options.test:
         options.verbose = True
-
-    if len(options.files) == 0:
-        parser.print_help()
-        sys.exit(1)
 
     main(options.files)
