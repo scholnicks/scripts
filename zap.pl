@@ -7,11 +7,7 @@
 #
 # (c) Steven Scholnick <steve@scholnick.net>
 #
-# The zap source code is published under version 2.1 of the GNU Lesser General Public License</a> (LGPL).
-# 
-# In brief, this means there's no warranty and you can do anything you like with it.
-# However, if you make changes to zap and redistribute those changes, 
-# then you must publish your modified version under the LGPL. 
+# The zap source code is published published under a MIT license. See http://www.scholnick.net/license.txt for details.
 #
 #############################################################################################################
 

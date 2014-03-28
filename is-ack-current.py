@@ -6,11 +6,7 @@ is-ack-current: Checks installed ack version against latest version available.
 
 (c) Steven Scholnick <steve@scholnick.net>
 
-The is-ack-current source code is published under version 2.1 of the GNU Lesser General Public License (LGPL).
-
-In brief, this means there's no warranty and you can do anything you like with it.
-However, if you make changes to rename and redistribute those changes,
-then you must publish your modified version under the LGPL.
+The is-ack-current source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
 """
 
 from __future__ import print_function
