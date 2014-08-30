@@ -10,6 +10,9 @@ far -x .html -s 'foo/bar' website
 
 For all files starting with the directory website, all foo references are changed to bar.
 
+Similar to:
+		find . -name "*.txt" -print0 | xargs -0 sed -i '' -e 's/foo/bar/g'
+
 (c) Steven Scholnick <steve@scholnick.net>
 
 The far source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
