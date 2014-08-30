@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 
 """
-Find and replace all instances of a string with a new string in a directory and all sub-directories.
+Find and replace all instances of a string with a new string in a directory and all its sub-directories. Extension (-x|--extension) and
+substitute pattern (-s|--substitute) are required.
 
-PATTERN is old/new
-
+Example
+-------
 far -x .html -s 'foo/bar' website
 
 For all files starting with the directory website, all foo references are changed to bar.
 
-Similar to:
-		find . -name "*.txt" -print0 | xargs -0 sed -i '' -e 's/foo/bar/g'
+Similar to find . -name "*.txt" -print0 | xargs -0 sed -i '' -e 's/foo/bar/g'
 
 (c) Steven Scholnick <steve@scholnick.net>
 
@@ -22,8 +22,6 @@ from __future__ import print_function
 import os, sys, re
 
 def main(startingDirectory):
-    """Main Method"""
-
     eligible_files = []
     for root, dirs, files in os.walk(os.path.abspath(startingDirectory)):
         eligible_files += [os.path.join(root,f) for f in files if f.lower().endswith(options.extension)]
