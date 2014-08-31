@@ -4,7 +4,7 @@
 """checklinks - validate links in one or more HTML files
 
 Requires external modules that can be installed from PyPI with:
-    pip install lxml BeautifulSoup requests
+    pip install lxml requests beautifulsoup4 
 
 (c) Steven Scholnick <steve@scholnick.net>
 
