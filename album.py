@@ -29,7 +29,6 @@ def main(startingDirectory):
         pictureFiles += [ImageFile(os.path.join(root,f)) for f in files if f.lower().endswith(".jpg")]
 
     pageNumber    = 1
-    rowCount      = 0
     numberOfPages = int( math.ceil(float(len(pictureFiles)) / float(options.page)) )
 
     (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
@@ -46,15 +45,11 @@ def main(startingDirectory):
         if photoIndex > 0 and (photoIndex % options.page) == 0:
             closeIndexPage(pageNumber,numberOfPages,indexFilePointer)
             pageNumber += 1
-            rowCount   = 0
             (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
 
         convertImage(imageFile,workingDirectory)
 
-        if rowCount > 0 and (rowCount % options.rowCount) == 0:
-            print('</tr>\n<tr>', file=indexFilePointer)
-
-        print('    <td><a class="picture" href="{0}.html"><img src="thumbnails/{1}" width="{2}" height="{3}"></a></td>'
+        print('    <li><a class="th" href="{0}.html"><img src="thumbnails/{1}" width="{2}" height="{3}"></a></li>'
               .format(photoIndex + 1,
                       os.path.basename(imageFile.path),
                       imageFile.thumbnailWidth,
@@ -62,8 +57,6 @@ def main(startingDirectory):
               ,file=indexFilePointer)
 
         createIndividualHTMLFile(workingDirectory,imageFile,len(pictureFiles),pageNumber)
-
-        rowCount += 1
 
     closeIndexPage(pageNumber,numberOfPages,indexFilePointer)
     sys.exit(0)
@@ -82,14 +75,14 @@ def openIndexPage(pageNumber,numberOfPages):
 
     print( getIndexPageHeader(pageNumber), file=indexFilePointer )
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
-    print( '\n<table>\n<tr>', file=indexFilePointer)
+    print( '<div class="row">\n<ul class="large-block-grid-8 medium-block-grid-4 small-block-grid-2">', file=indexFilePointer)
 
     return (workingDirectory,indexFilePointer)
 
 
 def closeIndexPage(pageNumber,numberOfPages,indexFilePointer):
     """prints out the closing part of an index page"""
-    print( '</tr>\n</table>\n', file=indexFilePointer)
+    print( '</ul>\n</div>\n', file=indexFilePointer)
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
     print( getIndexPageFooter(pageNumber,numberOfPages), file=indexFilePointer)
     indexFilePointer.close()
@@ -150,22 +143,22 @@ def getPaginationSection(pageNumber,numberOfPages):
     if numberOfPages == 1:
         return ''
 
-    html = '<div class="pagination pagination-right">\n<ul>\n'
+    html = '<div class="row">\n<ul class="pagination right">\n'
 
     if pageNumber == 1:
-        html += '    <li class="disabled"><a href="#">&laquo;</a></li>\n'
+        html += '    <li class="arrow unavailable"><a href="#">&laquo;</a></li>\n'
     else:
         html += '    <li><a href="../page{0}/">&laquo;</a></li>\n'.format(pageNumber-1)
 
     for number in xrange(1,numberOfPages+1):
-        html += '    <li{0}><a href="../page{1}/">{1}</a></li>\n'.format(' class="active"' if number == pageNumber else '', number)
+        html += '    <li{0}><a href="../page{1}/">{1}</a></li>\n'.format(' class="current"' if number == pageNumber else '', number)
 
     if pageNumber == numberOfPages:
-        html += '    <li class="disabled"><a href="#">&raquo;</a></li>\n'
+        html += '    <li class="unavailable"><a href="#">&raquo;</a></li>\n'
     else:
-        html += '    <li><a href="../page{0}/">&raquo;</a></li>\n'.format(pageNumber+1)
+        html += '    <li class="arrow"><a href="../page{0}/">&raquo;</a></li>\n'.format(pageNumber+1)
 
-    html += '</ul>\n</div>'
+    html += '</ul>\n</div>\n'
 
     return html
 
@@ -173,10 +166,7 @@ def getPaginationSection(pageNumber,numberOfPages):
 def getIndexPageFooter(pageNumber,numberOfPages):
     """Returns the footer for the index pages"""
     return r"""
-</div>
-</div>
-
-<!--#include virtual="/includes/bottom-scripts.html" -->
+<!--#include virtual="/includes/bottom-scripts-foundation.html" -->
 <script type="text/javascript">
     $(function() {
         $('#nav-pictures').addClass('active');
@@ -192,67 +182,61 @@ def getIndexPageHeader(pageNumber):
     pageTitle = options.title if numberOfPages == 1 else "{0}: Page {1}".format(options.title,pageNumber)
 
     """Returns the header for the index pages"""
-    return '''<!DOCTYPE html>
-<html lang="en">
-    <meta charset="utf-8">
+    return '''<!doctype html>
+<html class="no-js" lang="en">
+<head>
     <title>{0}</title>
+    <meta charset="utf-8">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="/css/base.css" rel="stylesheet">
-    <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
-    <script type="text/javascript" src="/js/jquery.js"></script>
-    <!--#include virtual="/includes/ieshiv" -->
+    <link rel="stylesheet" href="/foundation/css/foundation.min.css">
+    <script src="/foundation/js/vendor/modernizr.js"></script>
+    <script src="/foundation/js/vendor/jquery.js"></script>
+    <script src="/foundation/js/foundation.min.js"></script>
 </head>
 <body>
 
-<!--#include virtual="/includes/top-navbar.html" -->
+<!--#include virtual="/includes/top-navbar-foundation.html" -->
 
-<!-- main center content -->
-
-<div class="container-fluid">
-<div class="span9">
-
-<div class="page-header text-center"><h2>{0}</h2></div>
+<div class="page-header text-center"><h1>{0}</h1></div>
 '''.format(pageTitle)
 
 
-SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
-<html lang="en">
+SINGLE_PAGE_TEMPLATE = r'''<!doctype html>
+<html class="no-js" lang="en">
 <head>
     <meta charset="utf-8">
     <title>$pictureSetTitle - Photo $index</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/bootstrap/css/bootstrap.css" rel="stylesheet">
-    <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="/css/base.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/css/picture-bootstrap.css">
-    <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
-    <script type="text/javascript" src="/js/jquery.js"></script>
-    <!--#include virtual="/includes/ieshiv" -->
+    <link rel="stylesheet" href="/foundation/css/foundation.min.css">
+    <script src="/foundation/js/vendor/modernizr.js"></script>
+    <script src="/foundation/js/vendor/jquery.js"></script>
+    <script src="/foundation/js/foundation.min.js"></script>
 </head>
 <body>
 
-<!--#include virtual="/includes/top-navbar.html" -->
+<!--#include virtual="/includes/top-navbar-foundation.html" -->
 
-<!-- main center content -->
-
-<div class="container-fluid">
-
-<div class="span10 navigation">
-$linkLine
+<div class="row top-and-bottom-space">
+    <div class="text-center large-8 columns">
+        $linkLine
+    </div>
+    <div class="large-4 columns"></div>
 </div>
 
-<div class="span10">
-<a href="index.html" title="Click on image to return to index"><img src="images/$filename" alt="$index of $numberOfPictures" height="$height" width="$width"></a>
-<p>$index of $numberOfPictures photos</p>
+<div class="row">
+    <div class="large-12 columns">
+        <img src="images/$filename" alt="$index of $numberOfPictures" height="$height" width="$width">
+    </div>
 </div>
 
+<div class="row top-and-bottom-space">
+    <div class="text-center large-8 columns"><p>$index of $numberOfPictures photos</p>
+    <div class="large-4 columns"></div>
 </div>
 
-<!--#include virtual="/includes/bottom-scripts.html" -->
+<!--#include virtual="/includes/bottom-scripts-foundation.html" -->
 <script src="/js/photo.js"></script>
 <script type="text/javascript">
 function previousPhoto() { window.location = "$lastPhotoFile"; }
