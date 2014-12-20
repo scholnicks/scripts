@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# yuicompress.sh - easy use of yuicompressor (http://yui.github.io/yuicompressor/)
+#
+# Open Source. No License.
 
 YUICOMPRESSOR_HOME=/opt/yuicompressor
 
