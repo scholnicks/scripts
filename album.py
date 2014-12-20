@@ -49,7 +49,7 @@ def main(startingDirectory):
 
         convertImage(imageFile,workingDirectory)
 
-        print('    <li><a class="th" href="{0}.html"><img src="thumbnails/{1}" width="{2}" height="{3}"></a></li>'
+        print('    <li><a class="th radius" href="{0}.html"><img src="thumbnails/{1}" width="{2}" height="{3}"></a></li>'
               .format(photoIndex + 1,
                       os.path.basename(imageFile.path),
                       imageFile.thumbnailWidth,
@@ -75,7 +75,7 @@ def openIndexPage(pageNumber,numberOfPages):
 
     print( getIndexPageHeader(pageNumber), file=indexFilePointer )
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
-    print( '<div class="row">\n<ul class="large-block-grid-8 medium-block-grid-4 small-block-grid-2">', file=indexFilePointer)
+    print( '<div class="row">\n<ul class="large-block-grid-8 medium-block-grid-6 small-block-grid-2">', file=indexFilePointer)
 
     return (workingDirectory,indexFilePointer)
 
@@ -188,17 +188,16 @@ def getIndexPageHeader(pageNumber):
     <title>{0}</title>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <link rel="stylesheet" href="/foundation/css/foundation.min.css">
-    <script src="/foundation/js/vendor/modernizr.js"></script>
-    <script src="/foundation/js/vendor/jquery.js"></script>
-    <script src="/foundation/js/foundation.min.js"></script>
 </head>
 <body>
 
 <!--#include virtual="/includes/top-navbar-foundation.html" -->
 
-<div class="page-header text-center"><h1>{0}</h1></div>
+<div class="row">
+   <div class="large-12 columns text-center"><h2>{0}</h2></div>
+</div>
 '''.format(pageTitle)
 
 
@@ -208,32 +207,20 @@ SINGLE_PAGE_TEMPLATE = r'''<!doctype html>
     <meta charset="utf-8">
     <title>$pictureSetTitle - Photo $index</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <link rel="stylesheet" href="/foundation/css/foundation.min.css">
-    <script src="/foundation/js/vendor/modernizr.js"></script>
-    <script src="/foundation/js/vendor/jquery.js"></script>
-    <script src="/foundation/js/foundation.min.js"></script>
 </head>
 <body>
 
 <!--#include virtual="/includes/top-navbar-foundation.html" -->
 
-<div class="row top-and-bottom-space">
-    <div class="text-center large-8 columns">
-        $linkLine
-    </div>
-    <div class="large-4 columns"></div>
+<div class="row text-center">
+    $linkLine
 </div>
 
-<div class="row">
-    <div class="large-12 columns">
-        <img src="images/$filename" alt="$index of $numberOfPictures" height="$height" width="$width">
-    </div>
-</div>
-
-<div class="row top-and-bottom-space">
-    <div class="text-center large-8 columns"><p>$index of $numberOfPictures photos</p>
-    <div class="large-4 columns"></div>
+<div class="row text-center">
+    <a href="index.html" title="Click on image to return to index"><img src="images/$filename" alt="$index of $numberOfPictures" height="$height" width="$width"></a>
+    <p>$index of $numberOfPictures photos</p>
 </div>
 
 <!--#include virtual="/includes/bottom-scripts-foundation.html" -->
@@ -360,10 +347,9 @@ if __name__ == '__main__':
     parser.add_option('-o','--overwrite',  dest="overwrite",   action="store_true", help='Overwrites the destination directory with the new set of photos.')
     parser.add_option('-p','--page',       dest="page",        type='int',          help='Sets the maximum number of photos per page, defaults to 50')
     parser.add_option('-q','--quiet',      dest="quiet",       action="store_true", help='Toggles quiet mode')
-    parser.add_option('-r','--row-count',  dest="rowCount",    type="int",          help='Sets the row count per index page, defaults to 7')
     parser.add_option('-t','--title',      dest="title",       type='string',       help='Sets the title [REQUIRED]')
     parser.add_option('-v','--verbose',    dest="verbose",     action="store_true", help='Toggles verbose mode')
-    parser.set_defaults(max=10000, page=50, rowCount=7, destination="photos")
+    parser.set_defaults(max=10000, page=50, destination="photos")
 
     options,args = parser.parse_args()
 
