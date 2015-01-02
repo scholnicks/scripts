@@ -231,11 +231,6 @@ function nextPhoto() { window.location = "$nextPhotoFile"; }
 $$(function() {
     $$('#nav-pictures').addClass('active');
 });
-
-$$('body').touchwipe({
-    wipeLeft: nextPhoto,
-    wipeRight: previousPhoto
-});
 </script>
 
 </body>
