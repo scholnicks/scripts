@@ -17,8 +17,8 @@ Options:
     -r, --remove=<pattern>                     Pattern to be removed
     -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new)
     -t, --test                                 Test mode (Just prints the renames)
-    --version                                  Prints the version
     -v, --verbose                              Verbose Mode
+    --version                                  Prints the version
 
 (c) Steven Scholnick <scholnicks@gmail.com>
 

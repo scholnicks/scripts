@@ -1,9 +1,23 @@
 #!/usr/bin/python -B
 # -*- coding: utf-8 -*-
 
-"""album:  Creates a album of photos complete with thumbnails. ImageMagick's convert does the hard work
+"""
+album:  Creates a album of photos complete with thumbnails. ImageMagick's convert does the hard work.
 
-(c) Steven Scholnick <steve@scholnick.net>
+Usage:
+    album [options] <title> <source-directory>
+
+Options:
+   -h, --help                         show this help message and exit
+   -d, --destination=<destination>    Sets the folder destination, [default: photos]
+   -m, --max=<max number of photos>   Sets the maximum number of photos. [default: 1000]
+   -o, --overwrite                    Overwrites the destination directory with the new set of photos.
+   -p, --page=<photos per page>       Sets the maximum number of photos per page, [default: 48]
+   -q, --quiet                        Toggles quiet mode
+   -v, --verbose                      Toggles verbose mode
+   --version                          Prints the version
+
+(c) Steven Scholnick <scholnicks@gmail.com>
 
 The album source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
 
@@ -16,33 +30,35 @@ from string import Template
 numberOfPages = 0
 
 def main(startingDirectory):
-    if os.path.exists(options.destination):
-        if options.overwrite:
-            shutil.rmtree(options.destination)
-        else:
-            raise SystemExit("{0} directory exists. Will not overwrite, --overwrite is set to false".format(options.destination))
+    destinationDirectory = arguments['--destination']
 
-    createDirectory(options.destination)
+    if os.path.exists(destinationDirectory):
+        if arguments['--overwrite']:
+            shutil.rmtree(destinationDirectory)
+        else:
+            raise SystemExit("{0} directory exists. Will not overwrite, --overwrite is not specified.".format(destinationDirectory))
+
+    createDirectory(destinationDirectory)
 
     pictureFiles = []
     for root, dirs, files in os.walk(os.path.abspath(startingDirectory)):
-        pictureFiles += [ImageFile(os.path.join(root,f)) for f in files if f.lower().endswith(".jpg")]
+        pictureFiles += [ImageFile(os.path.join(root,f)) for f in files if f.lower().endswith(".jpg") or f.lower().endswith(".png")]
 
     pageNumber    = 1
-    numberOfPages = int( math.ceil(float(len(pictureFiles)) / float(options.page)) )
+    numberOfPages = int( math.ceil(float(len(pictureFiles)) / float(arguments['--page']) ) )
 
     (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
 
-    if options.verbose:
+    if arguments['--verbose']:
         print("Number of photos = {0}, number of pages = {1}, output directory = {2}"
-              .format(len(pictureFiles), numberOfPages, options.destination))
+              .format(len(pictureFiles), numberOfPages, destinationDirectory))
 
     for photoIndex in xrange(0,len(pictureFiles)):
         imageFile = pictureFiles[photoIndex]
         imageFile.index = photoIndex
         calculateDimensions(imageFile)
 
-        if photoIndex > 0 and (photoIndex % options.page) == 0:
+        if photoIndex > 0 and (photoIndex % int(arguments['--page'])) == 0:
             closeIndexPage(pageNumber,numberOfPages,indexFilePointer)
             pageNumber += 1
             (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
@@ -70,7 +86,7 @@ def calculateDimensions(photoFile):
 
 def openIndexPage(pageNumber,numberOfPages):
     """prints out the opening of an index page and returns the current working directory and the file pointer"""
-    workingDirectory = createDirectory(options.destination + '/page' +  str(pageNumber))
+    workingDirectory = createDirectory(arguments['--destination'] + '/page' +  str(pageNumber))
     indexFilePointer = open(os.path.join(workingDirectory,"index.html"),"w")
 
     print( getIndexPageHeader(pageNumber), file=indexFilePointer )
@@ -91,7 +107,7 @@ def closeIndexPage(pageNumber,numberOfPages,indexFilePointer):
 
 def convertImage(imageFile,workingDirectory):
     """Creates both the standard and thumbnail images in the proper directories with the correct permissions"""
-    if not options.quiet: print("Processing {}".format(imageFile))
+    if not arguments['--quiet']: print("Processing {}".format(imageFile))
 
     imagesDirectory     = createDirectory(workingDirectory + '/images',True)
     thumbnailsDirectory = createDirectory(workingDirectory + '/thumbnails',True)
@@ -113,14 +129,21 @@ def createThumbnailImage(imagesDirectory,imageFile):
 
 
 def createImage(inFile,outFile,scale):
-    """performs the actual image file creation by using the ImageMagick standalone app, convert. The file is then optimized with jpegtran"""
+    """performs the actual image file creation by using the ImageMagick standalone app, convert. The file is then optimized with jpegtran or optipng"""
     cmd = "convert {0} -size {1} -quality 100 -scale {1} -strip -auto-orient {2}"
     if subprocess.call(cmd.format(inFile,scale,outFile),shell=True) != 0:
         raise StandardError('Unable to scale the image with convert')
 
-    cmd = 'jpegtran -copy none -optimize -perfect -outfile {0} {0}'
-    if subprocess.call(cmd.format(outFile),shell=True) != 0:
-        raise StandardError('Unable to optimize the image jpegtran')
+    compressionCommmand = None
+
+    if inFile.endswith(".jpg"):
+        compressionCommmand = 'jpegtran -copy none -optimize -perfect -outfile {0} {0}'
+    elif inFile.endswith(".png"):
+        compressionCommmand = 'optipng -quiet -o0 -strip all -out {0} {0}'
+
+    if compressionCommmand:
+        if subprocess.call(compressionCommmand.format(outFile),shell=True) != 0:
+            raise StandardError('Unable to optimize the image jpegtran')
 
     os.chmod(outFile,0644)
 
@@ -179,7 +202,7 @@ def getIndexPageFooter(pageNumber,numberOfPages):
 
 
 def getIndexPageHeader(pageNumber):
-    pageTitle = options.title if numberOfPages == 1 else "{0}: Page {1}".format(options.title,pageNumber)
+    pageTitle = arguments['<title>'] if numberOfPages == 1 else "{0}: Page {1}".format(arguments['<title>'],pageNumber)
 
     """Returns the header for the index pages"""
     return '''<!doctype html>
@@ -248,10 +271,12 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
     prevHTML = ''
     nextHTML = ''
 
+    photosPerPage = int(arguments['--page'])
+
     if prev == 0:
         prevHTML = 'index.html'
     else:
-        if (prev % options.page) == 0:
+        if (prev % photosPerPage) == 0:
             prevHTML = '../page{0}/{1}.html'.format((pageNumber-1),prev)
         else:
             prevHTML = str(prev) + '.html'
@@ -259,7 +284,7 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
     if next > numberOfPhotos:
         nextHTML = 'index.html'
     else:
-        if (index % options.page) == 0:
+        if (index % photosPerPage) == 0:
             nextHTML = '../page{0}/{1}.html'.format((pageNumber+1),next)
         else:
             nextHTML = str(next) + ".html"
@@ -269,7 +294,7 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
     <a title="Next Photo" href="{1}"><img src="/images/forward.png" width="32" height="32" alt="->"></a>'''.format(prevHTML,nextHTML)
 
     html = Template(SINGLE_PAGE_TEMPLATE).substitute(
-       pictureSetTitle=options.title,
+       pictureSetTitle=arguments['<title>'],
        index=index,
        numberOfPictures=numberOfPhotos,
        lastPhotoFile=prevHTML,
@@ -322,7 +347,7 @@ class ImageFile(object):
         return '{0}x{1}'.format(self.scaledWidth,self.scaledHeight)
 
     # duck typing methods. this class will be used in place
-    # of a str in os.path.join() and open() calls
+    # of a str in several spots
 
     def __str__(self):
         return self.path
@@ -333,27 +358,16 @@ class ImageFile(object):
     def __getitem__(self,key):
         return self.path.__getitem__(key)
 
+    def endswith(self,suffix):
+        return self.path.endswith(suffix)
+
+
 
 if __name__ == '__main__':
-    from optparse import OptionParser
+    from docopt import docopt
+    arguments = docopt(__doc__, version='2.0.0')
 
-    parser = OptionParser(usage='%prog [options] Input_Directory')
-    parser.add_option('-d','--destination',dest="destination", type='string',       help='Sets the folder destination, defaults to photos')
-    parser.add_option('-m','--max',        dest="max",         type='int',          help='Sets the maximum number of photos')
-    parser.add_option('-o','--overwrite',  dest="overwrite",   action="store_true", help='Overwrites the destination directory with the new set of photos.')
-    parser.add_option('-p','--page',       dest="page",        type='int',          help='Sets the maximum number of photos per page, defaults to 50')
-    parser.add_option('-q','--quiet',      dest="quiet",       action="store_true", help='Toggles quiet mode')
-    parser.add_option('-t','--title',      dest="title",       type='string',       help='Sets the title [REQUIRED]')
-    parser.add_option('-v','--verbose',    dest="verbose",     action="store_true", help='Toggles verbose mode')
-    parser.set_defaults(max=10000, page=50, destination="photos")
+    if arguments['--verbose']:
+        arguments['--quiet'] = False
 
-    options,args = parser.parse_args()
-
-    if options.verbose:
-        options.quiet = False
-
-    if len(args) < 1 or not options.title:
-        parser.print_help()
-        sys.exit(1)
-
-    main(args[0])
+    main(arguments['<source-directory>'])
