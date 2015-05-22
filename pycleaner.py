@@ -2,7 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-pycleaner [--verbose] FILES DIRECTORIES
+pycleaner: clean python source files
+
+Usage:
+   pycleaner [--verbose] <files> ...
+
+Files can be a directory. If it is a directory, the directory and all of its sub-directories are search for .py files.
 
 The following cleaning is performed:
 
@@ -11,7 +16,12 @@ The following cleaning is performed:
 * Spaces before a colon are removed
 * Trailing blank lines are removed
 
-(c) Steven Scholnick <steve@scholnick.net>
+Options:
+    -h, --help     Show this help screen
+    -v, --verbose  Verbose Mode
+    --version      Prints the version
+
+(c) Steven Scholnick <scholnicks@gmail.com>
 
 The pycleaner source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
 """
@@ -20,9 +30,9 @@ from __future__ import print_function
 import os, sys, re
 
 
-def main():
+def main(files):
     """main method"""
-    for path in args:
+    for path in files:
         path = os.path.abspath(path)
         if os.path.isdir(path):
             processDirectory(path)
@@ -42,7 +52,7 @@ def processDirectory(startingDirectory):
 
 def processFile(filePath):
     """cleans a single .py file"""
-    if options.verbose:
+    if arguments['--verbose']:
         print("Cleaning {0}".format(filePath))
 
     lines = []
@@ -77,15 +87,6 @@ def countTrailingBlankLines(lines):
 
 
 if __name__ == '__main__':
-    from optparse import OptionParser
-
-    parser = OptionParser(usage=__doc__)
-    parser.add_option('-v','--verbose',dest="verbose", action="store_true", help='Toggles verbose')
-
-    options,args = parser.parse_args()
-
-    if len(args) == 0:
-        parser.print_help()
-        sys.exit(1)
-
-    main()
+    from docopt import docopt
+    arguments = docopt(__doc__, version='1.0.1')
+    main(arguments['<files>'])

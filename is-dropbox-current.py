@@ -4,9 +4,17 @@
 """
 is-drop-current: Checks installed Dropbox version against latest version available.
 
+Usage:
+   is-drop-current [--verbose]
+
 Inspired by: https://github.com/tjluoma/is-dropbox-current (zsh version)
 
-(c) Steven Scholnick <steve@scholnick.net>
+Options:
+    -h, --help     Show this help screen
+    -v, --verbose  Verbose Mode
+    --version      Prints the version
+
+(c) Steven Scholnick <scholnicks@gmail.com>
 
 The is-drop-current source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
 """
@@ -24,18 +32,18 @@ def main():
     '''main method'''
     installed_version = get_installed_version()
 
-    if options.debug:
+    if arguments['--verbose']:
         print("Installed version : {0}".format(installed_version))
 
     latest_version = get_latest_version()
 
-    if options.debug:
+    if arguments['--verbose']:
         print("Latest version (from RSS) : {0}".format(latest_version))
 
     if installed_version != latest_version:
         print("{0} is installed. Latest version available is {1}".format(installed_version,latest_version))
         print(DOWNLOAD_MESSAGE.format(latest_version))
-    elif options.debug:
+    elif arguments['--verbose']:
         print("Versions match: {0}".format(installed_version))
 
     sys.exit(0)
@@ -58,9 +66,6 @@ def get_latest_version():
 
 
 if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(description='Checks installed Dropbox version against latest version available')
-    parser.add_argument('-d','--debug', dest="debug", action="store_true", help='Toggles debug mode')
-    options = parser.parse_args()
-
+    from docopt import docopt
+    arguments = docopt(__doc__, version='1.0.1')
     main()
