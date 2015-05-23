@@ -7,16 +7,20 @@ dateTree: Creates a tree of pictures separated into date directories
           All filenames will be converted to all lowercase
           Only JPEGs will be copied
 
+Usage:
+    dateTree [--quiet] <starting-directory> <destination-directory>
+
 Requires external modules that can be installed from PyPI with:
     pip install pillow
 
-(c) Steven Scholnick <steve@scholnick.net>
+Options:
+    -h, --help     Show this help screen
+    -q, --quiet    Quiet Mode
+    --version      Prints the version
 
-The dateTree source code is published under version 2.1 of the GNU Lesser General Public License (LGPL).
+(c) Steven Scholnick <scholnicks@gmail.com>
 
-In brief, this means there's no warranty and you can do anything you like with it.
-However, if you make changes to dateTree and redistribute those changes,
-then you must publish your modified version under the LGPL.
+The far source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
 """
 
 from __future__ import print_function
@@ -29,13 +33,13 @@ from PIL.ExifTags import TAGS
 DATE_FORMAT = '%Y-%m-%d'
 
 
-def main():
+def main(startingDirectory):
     try:
-        pictureFiles    = getPictureFiles(os.path.abspath(args[0]))
-        destinationRoot = createDirectory(options.destination)
+        pictureFiles    = getPictureFiles(os.path.abspath(startingDirectory))
+        destinationRoot = createDirectory(arguments['<destination-directory>'])
 
         for p in pictureFiles:
-            if not options.quiet:
+            if not arguments['--quiet']:
                 print("Processing {0}".format(p))
 
             directoryName = getDate(p)
@@ -58,25 +62,14 @@ def getPictureFiles(sourceDirectory):
 
 def getDate(filePath):
     """ Returns the date for the specified file """
-    try:
-        return getCreationDate(filePath)
-    except TypeError:
-        return getModificationTime(filePath)
-
-
-def getCreationDate(filePath):
-    """ Returns the creation date for the image. Read from the photo's EXIF """
+    # first try reading the creation date from the image itself
     for (k,v) in Image.open(filePath)._getexif().iteritems():
         if TAGS[k] == 'DateTimeOriginal':
             dateTime = datetime.datetime.strptime(v,'%Y:%m:%d %H:%M:%S')
             return dateTime.strftime(DATE_FORMAT)
 
-    raise TypeError("Unable to read the DateTimeOriginal")
-
-
-def getModificationTime(filePath):
-    """ Returns the modification date for the file """
-    datetime.datetime.fromtimestamp(os.path.getmtime(filePath)).strftime(DATE_FORMAT)
+    # unable to get the date from the image, just return the file's modification date
+    return datetime.datetime.fromtimestamp(os.path.getmtime(filePath)).strftime(DATE_FORMAT)
 
 
 def createDirectory(path,allowExisting=False):
@@ -91,16 +84,6 @@ def createDirectory(path,allowExisting=False):
             raise
 
 if __name__ == '__main__':
-    from optparse import OptionParser
-
-    parser = OptionParser(usage='%prog [options] Input_Directory')
-    parser.add_option('-d','--destination',dest="destination", type='string', help='Sets the folder destination [REQUIRED]')
-    parser.add_option('-q','--quiet',dest="quiet", action="store_true", help='Toggles quiet mode')
-
-    options,args = parser.parse_args()
-
-    if len(args) < 1 or not options.destination:
-        parser.print_help()
-        sys.exit(1)
-
-    main()
+    from docopt import docopt
+    arguments = docopt(__doc__, version='1.0.1')
+    main(arguments['<starting-directory>'])
