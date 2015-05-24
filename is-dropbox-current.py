@@ -40,11 +40,9 @@ def main():
     if arguments['--verbose']:
         print("Latest version (from RSS) : {0}".format(latest_version))
 
-    if installed_version != latest_version:
+    if installed_version < latest_version:
         print("{0} is installed. Latest version available is {1}".format(installed_version,latest_version))
         print(DOWNLOAD_MESSAGE.format(latest_version))
-    elif arguments['--verbose']:
-        print("Versions match: {0}".format(installed_version))
 
     sys.exit(0)
 
