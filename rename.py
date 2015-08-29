@@ -92,7 +92,6 @@ def fixNumbers(fileName,delimiter,numberLength):
 
     sequenceValue = number
 
-    # TODO: rewrite using the * operator for strings
     for i in xrange(len(number),int(numberLength)):
         sequenceValue = "0" + sequenceValue
 

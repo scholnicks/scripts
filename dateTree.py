@@ -20,11 +20,11 @@ Options:
 
 (c) Steven Scholnick <scholnicks@gmail.com>
 
-The far source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
+The dateTree source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
 """
 
 from __future__ import print_function
-import os, sys, re, shutil
+import os, sys, shutil
 import datetime
 
 from PIL import Image

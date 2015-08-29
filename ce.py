@@ -4,7 +4,7 @@
 """
 ce: Mac Contacts Exporter
 
-(c) Steven Scholnick <steve@scholnick.net>
+(c) Steven Scholnick <scholnicks@gmail.com>
 
 The ce source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
 
@@ -32,9 +32,9 @@ def main():
             for row in conn.cursor().execute(SQL):
                 printRow(fp,row)
 
-    if options.verbose: 
+    if options.verbose:
         print("{0} has been created".format(options.outputPath))
-    
+
     sys.exit(0)
 
 

@@ -2,11 +2,8 @@
 #
 # space:  Calculates disk space in MBs
 #
-# (c) Steven Scholnick <steve@scholnick.net>
-#
+# (c) Steven Scholnick <scholnicks@gmail.com>
 # The space source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
-#
-##################################################################################################################
 
 use strict;
 use warnings;
@@ -33,11 +30,11 @@ sub reportSize {
 	my $path  = shift;
 	my $file  = 0;
 	my $sizeb = 0;
-	
+
 	&find ( sub { $sizeb += -s }, "$path");
 	&find ( sub { $file += 1 },   "$path");
-	
+
 	my $sizemb = int ($sizeb / 1024 / 1024);
-	
+
 	print "$path = $file files using $sizemb megs of disk space\n";
 }
