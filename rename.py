@@ -15,6 +15,7 @@ Options:
     -l, --lower                                Translates the filenames to lowercase
     -p, --prepend=<prefix>                     Prefix to be prepended
     -r, --remove=<pattern>                     Pattern to be removed
+    --random                                   Randomize the files (--prepend can be used to specify the prefix, defaults to "file")
     -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new)
     -t, --test                                 Test mode (Just prints the renames)
     -v, --verbose                              Verbose Mode
@@ -26,17 +27,42 @@ The rename source code is published under a MIT license. See http://www.scholnic
 """
 
 from __future__ import print_function
-import os, sys, re
+import os, sys, re, random
 
 def main(files):
     """Main Method"""
     if arguments['--verbose']:
-        print("Renaming: {0}".format(", ".join(files)))
+        print("Renaming: {0}\n".format(", ".join(files)))
 
-    for fileName in files:
-        renameFile(fileName)
+    if arguments['--random']:
+        random_files(files)
+    else:
+        for fileName in files:
+            renameFile(fileName)
 
     sys.exit(0)
+
+def random_files(files):
+    '''randomly shuffles a list of files with the same extension'''
+
+    # determine the extension
+    extensions = set((os.path.splitext(f)[1].lower() for f in files))
+    if len(extensions) > 1:
+        print("Only one extension allowed for randomization. Found: {0}".format(", ".join(extensions)),file=sys.stderr)
+        sys.exit(1)
+
+    extension = list(extensions)[0]
+
+    # do the shuffle
+    random.shuffle(files)
+
+    prefix = arguments['--prepend'] if arguments['--prepend'] else 'file'
+
+    # rename the files in numeric order
+    for f in enumerate(files,1):
+        new_file_name = os.path.join(os.path.dirname(f[1]),'{prefix}_{num:04d}'.format(prefix=prefix,num=f[0]) + extension)
+        rename_file(f[1],new_file_name)
+
 
 def renameFile(fileName):
     """Renames an individual file"""
@@ -65,11 +91,16 @@ def renameFile(fileName):
         newFileName = substitute(newFileName,arguments['--substitute'])
 
     if newFileName != fileName:
-        if arguments['--verbose']:
-            print("Renaming {0} to {1}".format(fileName,newFileName))
+        rename_file(fileName,newFileName)
 
-        if not arguments['--test']:
-            os.rename(fileName,newFileName)
+
+def rename_file(old_file_name, new_file_name):
+    """Performs the actual file rename"""
+    if arguments['--verbose']:
+        print("Renaming {0} to {1}".format(old_file_name,new_file_name))
+
+    if not arguments['--test']:
+        os.rename(old_file_name,new_file_name)
 
 
 def substitute(fileName,pattern):
