@@ -49,9 +49,9 @@ def random_files(files):
     extensions = set((os.path.splitext(f)[1].lower() for f in files))
     if len(extensions) > 1:
         print("Only one extension allowed for randomization. Found: {0}".format(", ".join(extensions)),file=sys.stderr)
-        sys.exit(1)
+        sys.exit(-1)
 
-    extension = list(extensions)[0]
+    extension = extensions.pop()
 
     # do the shuffle
     random.shuffle(files)
