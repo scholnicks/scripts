@@ -59,9 +59,9 @@ def random_files(files):
     prefix = arguments['--prepend'] if arguments['--prepend'] else 'file'
 
     # rename the files in numeric order
-    for f in enumerate(files,1):
-        new_file_name = os.path.join(os.path.dirname(f[1]),'{prefix}_{num:04d}'.format(prefix=prefix,num=f[0]) + extension)
-        rename_file(f[1],new_file_name)
+    for (index,filename) in enumerate(files,1):
+        new_file_name = os.path.join(os.path.dirname(filename),'{prefix}_{num:04d}'.format(prefix=prefix,num=index) + extension)
+        rename_file(filename,new_file_name)
 
 
 def renameFile(fileName):
