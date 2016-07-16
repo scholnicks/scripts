@@ -27,7 +27,7 @@ from __future__ import print_function
 import os, sys, re, math, subprocess, shutil
 from string import Template
 
-numberOfPages = 0
+#numberOfPages = 0
 
 def main(startingDirectory):
     destinationDirectory = arguments['--destination']
@@ -89,7 +89,7 @@ def openIndexPage(pageNumber,numberOfPages):
     workingDirectory = createDirectory(arguments['--destination'] + '/page' +  str(pageNumber))
     indexFilePointer = open(os.path.join(workingDirectory,"index.html"),"w")
 
-    print( getIndexPageHeader(pageNumber), file=indexFilePointer )
+    print( getIndexPageHeader(pageNumber,numberOfPages), file=indexFilePointer )
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
     print( '<div class="row">\n<ul class="large-block-grid-8 medium-block-grid-6 small-block-grid-2">', file=indexFilePointer)
 
@@ -201,7 +201,7 @@ def getIndexPageFooter(pageNumber,numberOfPages):
 """
 
 
-def getIndexPageHeader(pageNumber):
+def getIndexPageHeader(pageNumber,numberOfPages):
     pageTitle = arguments['<title>'] if numberOfPages == 1 else "{0}: Page {1}".format(arguments['<title>'],pageNumber)
 
     """Returns the header for the index pages"""
@@ -365,7 +365,7 @@ class ImageFile(object):
 
 if __name__ == '__main__':
     from docopt import docopt
-    arguments = docopt(__doc__, version='2.0.0')
+    arguments = docopt(__doc__, version='2.1.0')
 
     if arguments['--verbose']:
         arguments['--quiet'] = False
