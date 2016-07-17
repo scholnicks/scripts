@@ -10,12 +10,14 @@ Usage:
 Options:
     -a, --append=<suffix>                      Suffix to be appended
     -d, --delimiter=<delimiter>                Specifies the delimiter for fixing numerical filenames
+    --directory=<directory>                    Destination direcotry
     -f, --fix=<number of digits to fix>        Fixes numerical file names [default: 4]
     -h, --help                                 Show this help screen
     -l, --lower                                Translates the filenames to lowercase
     -p, --prepend=<prefix>                     Prefix to be prepended
     -r, --remove=<pattern>                     Pattern to be removed
     --random                                   Randomize the files (--prepend can be used to specify the prefix, defaults to "file")
+    --reorder                                  Reorder the files in order specfied on command line (--prepend can be used to specify the prefix, defaults to "file")
     -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new)
     -t, --test                                 Test mode (Just prints the renames)
     -v, --verbose                              Verbose Mode
@@ -36,22 +38,20 @@ def main(files):
 
     if arguments['--random']:
         random_files(files)
+    elif arguments['--reorder']:
+        reorder_files(files)
     else:
         for fileName in files:
             renameFile(fileName)
 
     sys.exit(0)
 
+
 def random_files(files):
     '''randomly shuffles a list of files with the same extension'''
 
     # determine the extension
-    extensions = set((os.path.splitext(f)[1].lower() for f in files))
-    if len(extensions) > 1:
-        print("Only one extension allowed for randomization. Found: {0}".format(", ".join(extensions)),file=sys.stderr)
-        sys.exit(-1)
-
-    extension = extensions.pop()
+    extension = calculateExtension(files)
 
     # do the shuffle
     random.shuffle(files)
@@ -62,6 +62,32 @@ def random_files(files):
     for (index,filename) in enumerate(files,1):
         new_file_name = os.path.join(os.path.dirname(filename),'{prefix}_{num:04d}'.format(prefix=prefix,num=index) + extension)
         rename_file(filename,new_file_name)
+
+
+def reorder_files(files):
+    '''reorders a set of files in order in a target directory'''
+
+    if not arguments['--directory']:
+        raise SystemExit("--directory must be set")
+
+    # determine the extension
+    extension = calculateExtension(files)
+
+    prefix = arguments['--prepend'] if arguments['--prepend'] else 'file'
+
+    # rename the files in numeric order
+    for (index,filename) in enumerate(files,1):
+        new_file_name = os.path.join(arguments['--directory'],'{prefix}_{num:04d}'.format(prefix=prefix,num=index) + extension)
+        rename_file(filename,new_file_name)
+
+
+def calculateExtension(files):
+    '''determine the extension'''
+    extensions = set((os.path.splitext(f)[1].lower() for f in files))
+    if len(extensions) > 1:
+        raise SystemExit("Only one extension allowed. Found: {0}".format(", ".join(extensions)))
+
+    return extensions.pop()
 
 
 def renameFile(fileName):
