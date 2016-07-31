@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-rename:  Renames files in powerful ways
+rename: Renames files in powerful ways
 
 Usage:
     rename [options] <files> ...
@@ -10,21 +10,33 @@ Usage:
 Options:
     -a, --append=<suffix>                      Suffix to be appended
     -d, --delimiter=<delimiter>                Specifies the delimiter for fixing numerical filenames
-    --directory=<directory>                    Destination direcotry
-    -f, --fix=<number of digits to fix>        Fixes numerical file names [default: 4]
+    --directory=<directory>                    Destination directory
+    -f, --fix=<maximum number of digits>       Fixes numerical file names [default: 4]
     -h, --help                                 Show this help screen
     -l, --lower                                Translates the filenames to lowercase
     -p, --prepend=<prefix>                     Prefix to be prepended
     -r, --remove=<pattern>                     Pattern to be removed
     --random                                   Randomize the files (--prepend can be used to specify the prefix, defaults to "file")
-    --reorder                                  Reorder the files in order specfied on command line (--prepend can be used to specify the prefix, defaults to "file")
+    --merge                                    Merges the files in order specfied on command line (See below for details/examples)
     -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new)
     -t, --test                                 Test mode (Just prints the renames)
     -v, --verbose                              Verbose Mode
     --version                                  Prints the version
 
-(c) Steven Scholnick <scholnicks@gmail.com>
+Using merge
 
+merge requires directory to be specified. prepend (defaults to file) is used for the base name for the merged files.
+For example to merge files from two different directories into the current directory:
+
+rename --merge --directory=. directory1/* directory2/*
+
+Input Files: directory1/file1.txt directory1/file2.txt directory2/file1.txt
+Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
+
+where file_0003.txt is directory2/file3.txt
+
+
+(c) Steven Scholnick <scholnicks@gmail.com>
 The rename source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
 """
 
@@ -37,17 +49,17 @@ def main(files):
         print("Renaming: {0}\n".format(", ".join(files)))
 
     if arguments['--random']:
-        random_files(files)
-    elif arguments['--reorder']:
-        reorder_files(files)
+        randomizeFiles(files)
+    elif arguments['--merge']:
+        mergeFiles(files)
     else:
         for fileName in files:
-            renameFile(fileName)
+            performRenameOperation(fileName)
 
     sys.exit(0)
 
 
-def random_files(files):
+def randomizeFiles(files):
     '''randomly shuffles a list of files with the same extension'''
 
     # determine the extension
@@ -64,7 +76,7 @@ def random_files(files):
         rename_file(filename,new_file_name)
 
 
-def reorder_files(files):
+def mergeFiles(files):
     '''reorders a set of files in order in a target directory'''
 
     if not arguments['--directory']:
@@ -75,14 +87,14 @@ def reorder_files(files):
 
     prefix = arguments['--prepend'] if arguments['--prepend'] else 'file'
 
-    # rename the files in numeric order
+    # rename the files in command line specified order
     for (index,filename) in enumerate(files,1):
         new_file_name = os.path.join(arguments['--directory'],'{prefix}_{num:04d}'.format(prefix=prefix,num=index) + extension)
         rename_file(filename,new_file_name)
 
 
 def calculateExtension(files):
-    '''determine the extension'''
+    '''determines the extension'''
     extensions = set((os.path.splitext(f)[1].lower() for f in files))
     if len(extensions) > 1:
         raise SystemExit("Only one extension allowed. Found: {0}".format(", ".join(extensions)))
@@ -90,8 +102,8 @@ def calculateExtension(files):
     return extensions.pop()
 
 
-def renameFile(fileName):
-    """Renames an individual file"""
+def performRenameOperation(fileName):
+    """Performs a renaming operation on the specififed filename"""
     if not os.path.exists(fileName):
         print("{0} does not exist, skipping.".format(fileName),file=sys.stderr)
         return
@@ -157,7 +169,7 @@ def fixNumbers(fileName,delimiter,numberLength):
 
 if __name__ == '__main__':
     from docopt import docopt
-    arguments = docopt(__doc__, version='1.1.0')
+    arguments = docopt(__doc__, version='1.1.1')
 
     if arguments['--test']:
         arguments['--verbose'] = True
