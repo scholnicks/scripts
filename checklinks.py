@@ -1,10 +1,10 @@
 #!/usr/bin/python -B
 # -*- coding: utf-8 -*-
 
-"""checklinks - validate links in one or more HTML files
+"""checklinks - validate links in one or more HTML files. The HTML files can exist locally or be accessible via a URL.
 
 Usage:
-    checklinks [options]  <files> ...
+    checklinks [options]  <filesOrURLs> ...
 
 Options:
     -h, --help                    Show this help screen
@@ -35,11 +35,31 @@ FORMAT="{0:80.70s} {1:10s}"
 def main(html_files):
     try:
         for filePath in html_files:
-            processFile(filePath)
+            if filePath.startswith('http'):
+                processRemoteFile(filePath)
+            else:
+                processFile(filePath)
     except KeyboardInterrupt:
         print()
 
     sys.exit(0)
+
+
+def processRemoteFile(url):
+    '''Parses a URL's text and checks all of the a links'''
+    r = requests.get(url)
+    if r.status_code != 200:
+        print("Cannot access URL: " + url)
+        return
+
+    root = os.path.dirname(url)
+
+    soup = BeautifulSoup(r.text)
+    for tag in soup.find_all('a'):
+        link = tag['href']
+        if not link.startswith('http'):
+            link = root + link
+        checkRemote(link)
 
 
 def processFile(filePath):
@@ -96,7 +116,7 @@ def checkLocal(path):
 
 if __name__ == '__main__':
     from docopt import docopt
-    arguments = docopt(__doc__, version='1.1.0')
+    arguments = docopt(__doc__, version='2.0.0')
 
     if arguments['--verbose']:
         arguments['--ok'] = True
@@ -104,4 +124,4 @@ if __name__ == '__main__':
     if arguments['--root']:
         arguments['--root'] = os.path.expanduser(arguments['--root'])
 
-    main(arguments['<files>'])
+    main(arguments['<filesOrURLs>'])
