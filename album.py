@@ -53,6 +53,13 @@ def main(startingDirectory):
         print("Number of photos = {0}, number of pages = {1}, output directory = {2}"
               .format(len(pictureFiles), numberOfPages, destinationDirectory))
 
+
+    IMAGE_TEMPLATE = r'''
+    <div class="col-lg-2 col-sm-6 col-md-3">
+        <a class="thumbnail" href="{0}.html"><img src="images/{1}"></a>
+    </div>
+'''
+
     for photoIndex in xrange(0,len(pictureFiles)):
         imageFile = pictureFiles[photoIndex]
         imageFile.index = photoIndex
@@ -65,12 +72,7 @@ def main(startingDirectory):
 
         convertImage(imageFile,workingDirectory)
 
-        print('    <li><a class="th radius" href="{0}.html"><img src="thumbnails/{1}" width="{2}" height="{3}"></a></li>'
-              .format(photoIndex + 1,
-                      os.path.basename(imageFile.path),
-                      imageFile.thumbnailWidth,
-                      imageFile.thumbnailHeight)
-              ,file=indexFilePointer)
+        print(IMAGE_TEMPLATE.format(photoIndex + 1,os.path.basename(imageFile.path)),file=indexFilePointer)
 
         createIndividualHTMLFile(workingDirectory,imageFile,len(pictureFiles),pageNumber)
 
@@ -91,15 +93,16 @@ def openIndexPage(pageNumber,numberOfPages):
 
     print( getIndexPageHeader(pageNumber,numberOfPages), file=indexFilePointer )
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
-    print( '<div class="row">\n<ul class="large-block-grid-8 medium-block-grid-6 small-block-grid-2">', file=indexFilePointer)
+    print( '<div class="row">', file=indexFilePointer)
 
     return (workingDirectory,indexFilePointer)
 
 
 def closeIndexPage(pageNumber,numberOfPages,indexFilePointer):
     """prints out the closing part of an index page"""
-    print( '</ul>\n</div>\n', file=indexFilePointer)
+    print( '</div>\n', file=indexFilePointer)
     print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
+    print( '</div>\n', file=indexFilePointer)
     print( getIndexPageFooter(pageNumber,numberOfPages), file=indexFilePointer)
     indexFilePointer.close()
     os.chmod(indexFilePointer.name,0644)
@@ -110,22 +113,22 @@ def convertImage(imageFile,workingDirectory):
     if not arguments['--quiet']: print("Processing {}".format(imageFile))
 
     imagesDirectory     = createDirectory(workingDirectory + '/images',True)
-    thumbnailsDirectory = createDirectory(workingDirectory + '/thumbnails',True)
+    #thumbnailsDirectory = createDirectory(workingDirectory + '/thumbnails',True)
 
     createStandardImage(imagesDirectory,imageFile)
-    createThumbnailImage(thumbnailsDirectory,imageFile)
+    #createThumbnailImage(thumbnailsDirectory,imageFile)
 
 
 def createStandardImage(imagesDirectory,imageFile):
     """Creates the standard image in the proper directory with the correct permissions"""
-    outFile = os.path.join(imagesDirectory, os.path.basename(imageFile))
+    outFile = os.path.join(imagesDirectory, os.path.basename(imageFile).lower())
     createImage(imageFile,outFile,imageFile.scaledDimension)
 
 
-def createThumbnailImage(imagesDirectory,imageFile):
-    """Creates the thumbnail image in the proper directory with the correct permissions"""
-    outFile = os.path.join(imagesDirectory, os.path.basename(imageFile))
-    createImage(imageFile,outFile,imageFile.thumbnailDimension)
+# def createThumbnailImage(imagesDirectory,imageFile):
+#     """Creates the thumbnail image in the proper directory with the correct permissions"""
+#     outFile = os.path.join(imagesDirectory, os.path.basename(imageFile))
+#     createImage(imageFile,outFile,imageFile.thumbnailDimension)
 
 
 def createImage(inFile,outFile,scale):
@@ -136,9 +139,9 @@ def createImage(inFile,outFile,scale):
 
     compressionCommmand = None
 
-    if inFile.endswith(".jpg"):
+    if inFile.endswith(('.jpg','.JPG')):
         compressionCommmand = 'jpegtran -copy none -optimize -perfect -outfile {0} {0}'
-    elif inFile.endswith(".png"):
+    elif inFile.endswith(('.png','.PNG')):
         compressionCommmand = 'optipng -quiet -o0 -strip all -out {0} {0}'
 
     if compressionCommmand:
@@ -166,30 +169,35 @@ def getPaginationSection(pageNumber,numberOfPages):
     if numberOfPages == 1:
         return ''
 
-    html = '<div class="row">\n<ul class="pagination right">\n'
+    html = r'''<div class="row">
+    <div class="col-xs-12">
+    <div class="pull-right">
+    <nav>
+    <ul class="pagination">
+    '''
 
     if pageNumber == 1:
-        html += '    <li class="arrow unavailable"><a href="#">&laquo;</a></li>\n'
+        html += '<li class="disabled"><a href="#">&laquo;</a></li>\n'
     else:
-        html += '    <li><a href="../page{0}/">&laquo;</a></li>\n'.format(pageNumber-1)
+        html += '<li><a href="../page{0}/">&laquo;</a></li>\n'.format(pageNumber-1)
 
     for number in xrange(1,numberOfPages+1):
-        html += '    <li{0}><a href="../page{1}/">{1}</a></li>\n'.format(' class="current"' if number == pageNumber else '', number)
+        html += '<li{0}><a href="../page{1}/">{1}</a></li>\n'.format(' class="current"' if number == pageNumber else '', number)
 
     if pageNumber == numberOfPages:
-        html += '    <li class="unavailable"><a href="#">&raquo;</a></li>\n'
+        html += '<li class="disabled"><a href="#">&raquo;</a></li>\n'
     else:
-        html += '    <li class="arrow"><a href="../page{0}/">&raquo;</a></li>\n'.format(pageNumber+1)
+        html += '<li><a href="../page{0}/">&raquo;</a></li>\n'.format(pageNumber+1)
 
-    html += '</ul>\n</div>\n'
+        html += '</ul></nav></div></div></div>'
 
-    return html
+    return html + '\n'
 
 
 def getIndexPageFooter(pageNumber,numberOfPages):
     """Returns the footer for the index pages"""
     return r"""
-<!--#include virtual="/includes/bottom-scripts-foundation.html" -->
+<!--#include virtual="/includes/bottom-scripts.html" -->
 <script type="text/javascript">
     $(function() {
         $('#nav-pictures').addClass('active');
@@ -205,49 +213,79 @@ def getIndexPageHeader(pageNumber,numberOfPages):
     pageTitle = arguments['<title>'] if numberOfPages == 1 else "{0}: Page {1}".format(arguments['<title>'],pageNumber)
 
     """Returns the header for the index pages"""
-    return '''<!doctype html>
-<html class="no-js" lang="en">
+    return '''<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>{0}</title>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Steven Scholnick : {0}</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <link rel="stylesheet" href="/foundation/css/foundation.min.css">
-    <link rel="stylesheet" href="/css/base-foundation.css">
-</head>
+
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/base.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+ </head>
 <body>
 
-<!--#include virtual="/includes/top-navbar-foundation.html" -->
+<!--#include virtual="/includes/top-navbar.html" -->
 
-<div class="row">
-   <div class="large-12 columns text-center"><h2>{0}</h2></div>
-</div>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1 class="page-header text-center">{0}</h1>
+        </div>
+    </div>
 '''.format(pageTitle)
 
 
-SINGLE_PAGE_TEMPLATE = r'''<!doctype html>
-<html class="no-js" lang="en">
+SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>$pictureSetTitle - Photo $index</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Steven Scholnick : $pictureSetTitle - Photo $index</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <link rel="stylesheet" href="/foundation/css/foundation.min.css">
-</head>
+
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/base.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+ </head>
 <body>
 
-<!--#include virtual="/includes/top-navbar-foundation.html" -->
+<!--#include virtual="/includes/top-navbar.html" -->
 
-<div class="row text-center">
-    $linkLine
+<div class="container">
+
+<div class="row">
+    <div class="col-xs-12 text-center">
+        $linkLine
+    </div>
 </div>
 
-<div class="row text-center">
-    <a href="index.html" title="Click on image to return to index"><img src="images/$filename" alt="$index of $numberOfPictures" height="$height" width="$width"></a>
-    <p>$index of $numberOfPictures photos</p>
+<div class="row">
+    <div class="col-xs-12 text-center">
+        <a href="index.html" title="Click on image to return to index"><img src="images/$filename" alt="$index of $numberOfPictures"></a>
+        <p>$index of $numberOfPictures photos</p>
+    </div>
 </div>
 
-<!--#include virtual="/includes/bottom-scripts-foundation.html" -->
+</div>
+
+<!--#include virtual="/includes/bottom-scripts.html" -->
 <script src="/js/photo.js"></script>
 <script type="text/javascript">
 function previousPhoto() { window.location = "$lastPhotoFile"; }
@@ -300,9 +338,7 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
        lastPhotoFile=prevHTML,
        nextPhotoFile=nextHTML,
        linkLine=linkLine,
-       filename=os.path.basename(imageFile.path),
-       height=imageFile.scaledHeight,
-       width=imageFile.scaledWidth
+       filename=os.path.basename(imageFile.path).lower()
     )
 
     filePath = os.path.join(workingDirectory,str(index) + ".html")
@@ -322,17 +358,17 @@ class ImageFile(object):
 
     # consider making another class/named tuple to hold height and width
 
-    @property
-    def thumbnailWidth(self):
-        return '128' if self.isPortrait() else '96'
+    # @property
+    # def thumbnailWidth(self):
+    #     return '128' if self.isPortrait() else '96'
 
-    @property
-    def thumbnailHeight(self):
-        return '96' if self.isPortrait() else '128'
+    # @property
+    # def thumbnailHeight(self):
+    #     return '96' if self.isPortrait() else '128'
 
-    @property
-    def thumbnailDimension(self):
-        return '{0}x{1}'.format(self.thumbnailWidth,self.thumbnailHeight)
+    # @property
+    # def thumbnailDimension(self):
+    #     return '{0}x{1}'.format(self.thumbnailWidth,self.thumbnailHeight)
 
     @property
     def scaledWidth(self):
@@ -365,7 +401,7 @@ class ImageFile(object):
 
 if __name__ == '__main__':
     from docopt import docopt
-    arguments = docopt(__doc__, version='2.1.0')
+    arguments = docopt(__doc__, version='3.0.0')
 
     if arguments['--verbose']:
         arguments['--quiet'] = False
