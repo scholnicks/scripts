@@ -10,6 +10,7 @@ Usage:
 Options:
    -h, --help                         show this help message and exit
    -d, --destination=<destination>    Sets the folder destination, [default: photos]
+   -l, --leave                        Do not convert the photos. Leave them as is.
    -m, --max=<max number of photos>   Sets the maximum number of photos. [default: 1000]
    -o, --overwrite                    Overwrites the destination directory with the new set of photos.
    -p, --page=<photos per page>       Sets the maximum number of photos per page, [default: 48]
@@ -26,8 +27,6 @@ The album source code is published under a MIT license. See http://www.scholnick
 from __future__ import print_function
 import os, sys, re, math, subprocess, shutil
 from string import Template
-
-#numberOfPages = 0
 
 def main(startingDirectory):
     destinationDirectory = arguments['--destination']
@@ -71,10 +70,11 @@ def main(startingDirectory):
             (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
 
         convertImage(imageFile,workingDirectory)
-
-        print(IMAGE_TEMPLATE.format(photoIndex + 1,os.path.basename(imageFile.path)),file=indexFilePointer)
-
+        print(IMAGE_TEMPLATE.format(photoIndex + 1,os.path.basename(imageFile.path).lower()),file=indexFilePointer)
         createIndividualHTMLFile(workingDirectory,imageFile,len(pictureFiles),pageNumber)
+
+        if photoIndex == int(arguments['--max'])-1:
+            break
 
     closeIndexPage(pageNumber,numberOfPages,indexFilePointer)
     sys.exit(0)
@@ -112,11 +112,8 @@ def convertImage(imageFile,workingDirectory):
     """Creates both the standard and thumbnail images in the proper directories with the correct permissions"""
     if not arguments['--quiet']: print("Processing {}".format(imageFile))
 
-    imagesDirectory     = createDirectory(workingDirectory + '/images',True)
-    #thumbnailsDirectory = createDirectory(workingDirectory + '/thumbnails',True)
-
+    imagesDirectory = createDirectory(workingDirectory + '/images',True)
     createStandardImage(imagesDirectory,imageFile)
-    #createThumbnailImage(thumbnailsDirectory,imageFile)
 
 
 def createStandardImage(imagesDirectory,imageFile):
@@ -125,17 +122,15 @@ def createStandardImage(imagesDirectory,imageFile):
     createImage(imageFile,outFile,imageFile.scaledDimension)
 
 
-# def createThumbnailImage(imagesDirectory,imageFile):
-#     """Creates the thumbnail image in the proper directory with the correct permissions"""
-#     outFile = os.path.join(imagesDirectory, os.path.basename(imageFile))
-#     createImage(imageFile,outFile,imageFile.thumbnailDimension)
-
-
 def createImage(inFile,outFile,scale):
     """performs the actual image file creation by using the ImageMagick standalone app, convert. The file is then optimized with jpegtran or optipng"""
-    cmd = "convert {0} -size {1} -quality 100 -scale {1} -strip -auto-orient {2}"
-    if subprocess.call(cmd.format(inFile,scale,outFile),shell=True) != 0:
-        raise StandardError('Unable to scale the image with convert')
+
+    if arguments['--leave']:
+        os.rename(inFile.path,outFile)
+    else:
+        cmd = "convert {0} -size {1} -quality 100 -scale {1} -strip -auto-orient {2}"
+        if subprocess.call(cmd.format(inFile,scale,outFile),shell=True) != 0:
+            raise StandardError('Unable to scale the image with convert')
 
     compressionCommmand = None
 
@@ -356,20 +351,6 @@ class ImageFile(object):
     def isPortrait(self):
         return self.width > self.height
 
-    # consider making another class/named tuple to hold height and width
-
-    # @property
-    # def thumbnailWidth(self):
-    #     return '128' if self.isPortrait() else '96'
-
-    # @property
-    # def thumbnailHeight(self):
-    #     return '96' if self.isPortrait() else '128'
-
-    # @property
-    # def thumbnailDimension(self):
-    #     return '{0}x{1}'.format(self.thumbnailWidth,self.thumbnailHeight)
-
     @property
     def scaledWidth(self):
         return '640' if self.isPortrait() else '480'
@@ -382,8 +363,7 @@ class ImageFile(object):
     def scaledDimension(self):
         return '{0}x{1}'.format(self.scaledWidth,self.scaledHeight)
 
-    # duck typing methods. this class will be used in place
-    # of a str in several spots
+    # duck typing methods. this class will be used in place of a str in several spots
 
     def __str__(self):
         return self.path
@@ -396,7 +376,6 @@ class ImageFile(object):
 
     def endswith(self,suffix):
         return self.path.endswith(suffix)
-
 
 
 if __name__ == '__main__':
