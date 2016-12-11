@@ -184,9 +184,9 @@ def getPaginationSection(pageNumber,numberOfPages):
     else:
         html += '<li><a href="../page{0}/">&raquo;</a></li>\n'.format(pageNumber+1)
 
-        html += '</ul></nav></div></div></div>'
+    html += '</ul></nav></div></div></div>\n'
 
-    return html + '\n'
+    return html
 
 
 def getIndexPageFooter(pageNumber,numberOfPages):

@@ -11,7 +11,7 @@ Options:
     -a, --append=<suffix>                      Suffix to be appended
     -d, --delimiter=<delimiter>                Specifies the delimiter for fixing numerical filenames
     --directory=<directory>                    Destination directory
-    -f, --fix=<maximum number of digits>       Fixes numerical file names [default: 4]
+    -f, --fix=<maximum number of digits>       Fixes numerical file names
     -h, --help                                 Show this help screen
     -l, --lower                                Translates the filenames to lowercase
     -p, --prepend=<prefix>                     Prefix to be prepended
@@ -123,6 +123,8 @@ def performRenameOperation(fileName):
         newFileName = re.sub(arguments['--remove'],r'',newFileName)
 
     if arguments['--delimiter']:
+        if not (arguments['--delimiter'] and arguments['--fix']):
+            raise SystemExit("--delimiter and --fix are required together")
         newFileName = fixNumbers(newFileName,arguments['--delimiter'],arguments['--fix'])
 
     if arguments['--substitute']:
