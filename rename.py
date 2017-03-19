@@ -1,4 +1,4 @@
-#!/usr/bin/python -B
+#!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
 
 """
@@ -34,7 +34,6 @@ Input Files: directory1/file1.txt directory1/file2.txt directory2/file1.txt
 Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
 
 where file_0003.txt is directory2/file3.txt
-
 
 (c) Steven Scholnick <scholnicks@gmail.com>
 The rename source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.

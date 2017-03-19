@@ -1,4 +1,4 @@
-#!/usr/bin/python -B
+#!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
 
 """checklinks - validate links in one or more HTML files. The HTML files can exist locally or be accessible via a URL.
