@@ -8,7 +8,8 @@ Usage:
     album [options] <title> <source-directory>
 
 Options:
-   -h, --help                         show this help message and exit
+   -c, --cover=<cover>                Sets the cover photo for social media embedded links [default: http://www.scholnick.net/images/opengraph-image.jpg]
+   -h, --help                         Shows this help message and exits
    -d, --destination=<destination>    Sets the folder destination, [default: photos]
    -l, --leave                        Do not convert the photos. Leave them as is.
    -m, --max=<max number of photos>   Sets the maximum number of photos. [default: 1000]
@@ -27,6 +28,7 @@ The album source code is published under a MIT license. See http://www.scholnick
 from __future__ import print_function
 import os, sys, re, math, subprocess, shutil
 from string import Template
+
 
 def main(startingDirectory):
     destinationDirectory = arguments['--destination']
@@ -105,7 +107,7 @@ def closeIndexPage(pageNumber,numberOfPages,indexFilePointer):
     print( '</div>\n', file=indexFilePointer)
     print( getIndexPageFooter(pageNumber,numberOfPages), file=indexFilePointer)
     indexFilePointer.close()
-    os.chmod(indexFilePointer.name,0644)
+    os.chmod(indexFilePointer.name,0o644)
 
 
 def convertImage(imageFile,workingDirectory):
@@ -143,14 +145,14 @@ def createImage(inFile,outFile,scale):
         if subprocess.call(compressionCommmand.format(outFile),shell=True) != 0:
             raise StandardError('Unable to optimize the image jpegtran')
 
-    os.chmod(outFile,0644)
+    os.chmod(outFile,0o644)
 
 
 def createDirectory(path,allowExisting=False):
     """Creates a new directory. If the directory already exists, an error may be raised (based on allowExisting)"""
     try:
         os.mkdir(path)
-        os.chmod(path,0755)
+        os.chmod(path,0o755)
         return os.path.abspath(path)
     except OSError:
         if allowExisting:
@@ -213,7 +215,22 @@ def getIndexPageHeader(pageNumber,numberOfPages):
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+    <meta property="og:locale"       content="en_US">
+    <meta property="og:type"         content="website">
+    <meta property="og:title"        content="Steven Scholnick : {0}">
+    <meta property="og:description"  content="Steven Scholnick : {0}">
+    <meta property="og:url"          content="http://www.scholnick.net/">
+    <meta property="og:site_name"    content="Steven Scholnick">
+    <meta property="og:image"        content="{1}">
+
+    <meta name="twitter:card"        content="summary">
+    <meta name="twitter:description" content="Steven Scholnick : {0}">
+    <meta name="twitter:title"       content="Steven Scholnick : {0}">
+    <meta name="twitter:site"        content="@scholnicks">
+    <meta name="twitter:image"       content="{1}">
+    <meta name="twitter:creator"     content="@scholnicks">
 
     <title>Steven Scholnick : {0}</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
@@ -221,7 +238,6 @@ def getIndexPageHeader(pageNumber,numberOfPages):
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/base.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -237,7 +253,7 @@ def getIndexPageHeader(pageNumber,numberOfPages):
             <h1 class="page-header text-center">{0}</h1>
         </div>
     </div>
-'''.format(pageTitle)
+'''.format(pageTitle,arguments['--cover'])
 
 
 SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
@@ -245,7 +261,22 @@ SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+    <meta property="og:locale"       content="en_US">
+    <meta property="og:type"         content="website">
+    <meta property="og:title"        content="Steven Scholnick : $pictureSetTitle - Photo $index">
+    <meta property="og:description"  content="Steven Scholnick : $pictureSetTitle - Photo $index">
+    <meta property="og:url"          content="http://www.scholnick.net/">
+    <meta property="og:site_name"    content="Steven Scholnick">
+    <meta property="og:image"        content="http://www.scholnick.net/images/opengraph-image.jpg">
+
+    <meta name="twitter:card"        content="summary">
+    <meta name="twitter:description" content="Steven Scholnick : $pictureSetTitle - Photo $index">
+    <meta name="twitter:title"       content="Steven Scholnick : $pictureSetTitle - Photo $index">
+    <meta name="twitter:site"        content="@scholnicks">
+    <meta name="twitter:image"       content="http://www.scholnick.net/images/opengraph-image.jpg">
+    <meta name="twitter:creator"     content="@scholnicks">
 
     <title>Steven Scholnick : $pictureSetTitle - Photo $index</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
@@ -253,7 +284,6 @@ SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/base.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -340,7 +370,7 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
     with open(filePath,'w') as htmlFile:
         print(html,file=htmlFile)
 
-    os.chmod(filePath,0644)
+    os.chmod(filePath,0o644)
 
 
 class ImageFile(object):
