@@ -16,16 +16,16 @@ Options:
     -l, --lower                                Translates the filenames to lowercase
     -p, --prepend=<prefix>                     Prefix to be prepended
     -r, --remove=<pattern>                     Pattern to be removed
-    --random                                   Randomize the files (--prepend can be used to specify the prefix, defaults to "file")
+    --random                                   Randomizes the files (--prepend can be used to specify the prefix, defaults to "file")
     --merge                                    Merges the files in order specfied on command line (See below for details/examples)
     -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new)
-    -t, --test                                 Test mode (Just prints the renames)
+    -t, --test                                 Test mode (Just prints the rename operations)
     -v, --verbose                              Verbose Mode
     --version                                  Prints the version
 
 Using merge
 
-merge requires directory to be specified. prepend (defaults to file) is used for the base name for the merged files.
+merge requires a directory to be specified. prepend (defaults to file) is used for the base name for the merged files.
 For example to merge files from two different directories into the current directory:
 
 rename --merge --directory=. directory1/* directory2/*
@@ -123,7 +123,7 @@ def performRenameOperation(fileName):
 
     if arguments['--delimiter']:
         if not (arguments['--delimiter'] and arguments['--fix']):
-            raise SystemExit("--delimiter and --fix are required together")
+            raise SystemExit("--delimiter and --fix are both required")
         newFileName = fixNumbers(newFileName,arguments['--delimiter'],arguments['--fix'])
 
     if arguments['--substitute']:
@@ -162,7 +162,8 @@ def fixNumbers(fileName,delimiter,numberLength):
 
     sequenceValue = number
 
-    for i in xrange(len(number),int(numberLength)):
+    # 2/3 compatible. in 2, the list will be generated and thrown away
+    for i in range(len(number),int(numberLength)):
         sequenceValue = "0" + sequenceValue
 
     return prefix + delimiter + sequenceValue + extension
