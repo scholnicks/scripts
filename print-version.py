@@ -5,7 +5,7 @@
 print-version: Reads an app's Info.plist and prints the version number for the app
 
 Usage:
-   print-version [--verbose] <application>
+   print-version <application>
 
 Inspired by: https://github.com/tjluoma/is-dropbox-current (zsh version)
 
@@ -19,8 +19,10 @@ The print-version source code is published under a MIT license. See http://www.s
 """
 
 from __future__ import print_function
-import sys, re
+import sys
+import re
 import plistlib
+
 
 def main():
     '''main method'''

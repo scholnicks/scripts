@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-album:  Creates a album of photos complete with thumbnails. ImageMagick's convert does the hard work.
+album:  Creates a album of photos complete with thumbnails.
 
 Usage:
     album [options] <title> <source-directory>
@@ -16,6 +16,7 @@ Options:
    -o, --overwrite                    Overwrites the destination directory with the new set of photos.
    -p, --page=<photos per page>       Sets the maximum number of photos per page, [default: 48]
    -q, --quiet                        Toggles quiet mode
+   -u, --url=<url>                    URL for the social media embedded links [default: http://www.scholnick.net]
    -v, --verbose                      Toggles verbose mode
    --version                          Prints the version
 
@@ -26,7 +27,8 @@ The album source code is published under a MIT license. See http://www.scholnick
 """
 
 from __future__ import print_function
-import os, sys, re, math, subprocess, shutil
+from PIL import Image
+import os, sys, math, shutil
 from string import Template
 
 
@@ -43,7 +45,7 @@ def main(startingDirectory):
 
     pictureFiles = []
     for root, dirs, files in os.walk(os.path.abspath(startingDirectory)):
-        pictureFiles += [ImageFile(os.path.join(root,f)) for f in files if f.lower().endswith(".jpg") or f.lower().endswith(".png")]
+        pictureFiles += [ImageFile(os.path.join(root,f)) for f in files if f.lower().endswith(".jpg")]
 
     pageNumber    = 1
     numberOfPages = int( math.ceil(float(len(pictureFiles)) / float(arguments['--page']) ) )
@@ -55,7 +57,7 @@ def main(startingDirectory):
               .format(len(pictureFiles), numberOfPages, destinationDirectory))
 
 
-    IMAGE_TEMPLATE = r'''
+    IMAGE_TEMPLATE = '''
     <div class="col-lg-2 col-sm-6 col-md-3">
         <a class="thumbnail" href="{0}.html"><img src="images/{1}"></a>
     </div>
@@ -83,9 +85,9 @@ def main(startingDirectory):
 
 
 def calculateDimensions(photoFile):
-    """Calculates the dimensions of the photo by calling the ImageMagick standalone app, identify"""
-    process = subprocess.Popen(['identify',photoFile.path],stdout=subprocess.PIPE)
-    (photoFile.width,photoFile.height) = re.search(r' (\d+)x(\d+) ',process.stdout.readline()).groups()
+    """Calculates the dimensions of the photo"""
+    image = Image.open(photoFile.path)
+    (photoFile.width,photoFile.height) = image.size
 
 
 def openIndexPage(pageNumber,numberOfPages):
@@ -115,35 +117,23 @@ def convertImage(imageFile,workingDirectory):
     if not arguments['--quiet']: print("Processing {}".format(imageFile))
 
     imagesDirectory = createDirectory(workingDirectory + '/images',True)
-    createStandardImage(imagesDirectory,imageFile)
-
-
-def createStandardImage(imagesDirectory,imageFile):
-    """Creates the standard image in the proper directory with the correct permissions"""
     outFile = os.path.join(imagesDirectory, os.path.basename(imageFile).lower())
-    createImage(imageFile,outFile,imageFile.scaledDimension)
+    createImage(imageFile,outFile)
 
 
-def createImage(inFile,outFile,scale):
-    """performs the actual image file creation by using the ImageMagick standalone app, convert. The file is then optimized with jpegtran or optipng"""
+def createImage(inFile,outFile):
+    """performs the actual image file conversion"""
 
     if arguments['--leave']:
         os.rename(inFile.path,outFile)
     else:
-        cmd = "convert {0} -size {1} -quality 100 -scale {1} -strip -auto-orient {2}"
-        if subprocess.call(cmd.format(inFile,scale,outFile),shell=True) != 0:
-            raise StandardError('Unable to scale the image with convert')
-
-    compressionCommmand = None
-
-    if inFile.endswith(('.jpg','.JPG')):
-        compressionCommmand = 'jpegtran -copy none -optimize -perfect -outfile {0} {0}'
-    elif inFile.endswith(('.png','.PNG')):
-        compressionCommmand = 'optipng -quiet -o0 -strip all -out {0} {0}'
-
-    if compressionCommmand:
-        if subprocess.call(compressionCommmand.format(outFile),shell=True) != 0:
-            raise StandardError('Unable to optimize the image jpegtran')
+        try:
+            im = Image.open(inFile.path)
+            im.thumbnail(inFile.scaledSize,Image.ANTIALIAS)
+            im.save(outFile,"JPEG")
+        except IOError:
+            print("Cannot create thumbnail for {}".format(inFile),file=sys.stderr)
+            return
 
     os.chmod(outFile,0o644)
 
@@ -221,7 +211,7 @@ def getIndexPageHeader(pageNumber,numberOfPages):
     <meta property="og:type"         content="website">
     <meta property="og:title"        content="Steven Scholnick : {0}">
     <meta property="og:description"  content="Steven Scholnick : {0}">
-    <meta property="og:url"          content="http://www.scholnick.net/">
+    <meta property="og:url"          content="{2}">
     <meta property="og:site_name"    content="Steven Scholnick">
     <meta property="og:image"        content="{1}">
 
@@ -253,10 +243,10 @@ def getIndexPageHeader(pageNumber,numberOfPages):
             <h1 class="page-header text-center">{0}</h1>
         </div>
     </div>
-'''.format(pageTitle,arguments['--cover'])
+'''.format(pageTitle,arguments['--cover'],arguments['--url'])
 
 
-SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
+SINGLE_PAGE_TEMPLATE = '''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -269,13 +259,13 @@ SINGLE_PAGE_TEMPLATE = r'''<!DOCTYPE html>
     <meta property="og:description"  content="Steven Scholnick : $pictureSetTitle - Photo $index">
     <meta property="og:url"          content="http://www.scholnick.net/">
     <meta property="og:site_name"    content="Steven Scholnick">
-    <meta property="og:image"        content="http://www.scholnick.net/images/opengraph-image.jpg">
+    <meta property="og:image"        content="$coverPhoto">
 
     <meta name="twitter:card"        content="summary">
     <meta name="twitter:description" content="Steven Scholnick : $pictureSetTitle - Photo $index">
     <meta name="twitter:title"       content="Steven Scholnick : $pictureSetTitle - Photo $index">
     <meta name="twitter:site"        content="@scholnicks">
-    <meta name="twitter:image"       content="http://www.scholnick.net/images/opengraph-image.jpg">
+    <meta name="twitter:image"       content="$coverPhoto">
     <meta name="twitter:creator"     content="@scholnicks">
 
     <title>Steven Scholnick : $pictureSetTitle - Photo $index</title>
@@ -363,6 +353,7 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
        lastPhotoFile=prevHTML,
        nextPhotoFile=nextHTML,
        linkLine=linkLine,
+       coverPhoto=arguments['--cover'],
        filename=os.path.basename(imageFile.path).lower()
     )
 
@@ -383,15 +374,20 @@ class ImageFile(object):
 
     @property
     def scaledWidth(self):
-        return '640' if self.isPortrait() else '480'
+        return 640 if self.isPortrait() else 480
 
     @property
     def scaledHeight(self):
-        return '480' if self.isPortrait() else '640'
+        return 480 if self.isPortrait() else 640
 
     @property
     def scaledDimension(self):
-        return '{0}x{1}'.format(self.scaledWidth,self.scaledHeight)
+        return '{0}x{1}'.format(self.scaledSize)
+
+    @property
+    def scaledSize(self):
+        return (self.scaledWidth,self.scaledHeight)
+
 
     # duck typing methods. this class will be used in place of a str in several spots
 
