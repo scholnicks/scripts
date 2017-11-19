@@ -39,7 +39,7 @@ def main(startingDirectory):
         if arguments['--overwrite']:
             shutil.rmtree(destinationDirectory)
         else:
-            raise SystemExit("{0} directory exists. Will not overwrite, --overwrite is not specified.".format(destinationDirectory))
+            raise SystemExit(f"{destinationDirectory} directory exists. Will not overwrite, --overwrite is not specified.")
 
     createDirectory(destinationDirectory)
 
@@ -48,7 +48,7 @@ def main(startingDirectory):
         pictureFiles += [ImageFile(os.path.join(root,f)) for f in files if f.lower().endswith(".jpg")]
 
     pageNumber    = 1
-    numberOfPages = int( math.ceil(float(len(pictureFiles)) / float(arguments['--page']) ) )
+    numberOfPages = int(math.ceil(float(len(pictureFiles)) / float(arguments['--page'])))
 
     (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
 
@@ -57,13 +57,12 @@ def main(startingDirectory):
               .format(len(pictureFiles), numberOfPages, destinationDirectory))
 
 
-    IMAGE_TEMPLATE = '''
-    <div class="col-lg-2 col-sm-6 col-md-3">
+    IMAGE_TEMPLATE = '''    <div class="col-lg-2 col-sm-6 col-md-3">
         <a class="thumbnail" href="{0}.html"><img src="images/{1}"></a>
     </div>
 '''
 
-    for photoIndex in xrange(0,len(pictureFiles)):
+    for photoIndex in range(0,len(pictureFiles)):
         imageFile = pictureFiles[photoIndex]
         imageFile.index = photoIndex
         calculateDimensions(imageFile)
@@ -74,7 +73,7 @@ def main(startingDirectory):
             (workingDirectory,indexFilePointer) = openIndexPage(pageNumber,numberOfPages)
 
         convertImage(imageFile,workingDirectory)
-        print(IMAGE_TEMPLATE.format(photoIndex + 1,os.path.basename(imageFile.path).lower()),file=indexFilePointer)
+        print(IMAGE_TEMPLATE.format(photoIndex + 1,os.path.basename(imageFile).lower()),file=indexFilePointer)
         createIndividualHTMLFile(workingDirectory,imageFile,len(pictureFiles),pageNumber)
 
         if photoIndex == int(arguments['--max'])-1:
@@ -95,19 +94,19 @@ def openIndexPage(pageNumber,numberOfPages):
     workingDirectory = createDirectory(arguments['--destination'] + '/page' +  str(pageNumber))
     indexFilePointer = open(os.path.join(workingDirectory,"index.html"),"w")
 
-    print( getIndexPageHeader(pageNumber,numberOfPages), file=indexFilePointer )
-    print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
-    print( '<div class="row">', file=indexFilePointer)
+    print(getIndexPageHeader(pageNumber,numberOfPages), file=indexFilePointer )
+    print(getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
+    print('<div class="row">', file=indexFilePointer)
 
     return (workingDirectory,indexFilePointer)
 
 
 def closeIndexPage(pageNumber,numberOfPages,indexFilePointer):
     """prints out the closing part of an index page"""
-    print( '</div>\n', file=indexFilePointer)
-    print( getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
-    print( '</div>\n', file=indexFilePointer)
-    print( getIndexPageFooter(pageNumber,numberOfPages), file=indexFilePointer)
+    print('</div>', file=indexFilePointer)
+    print(getPaginationSection(pageNumber,numberOfPages), file=indexFilePointer)
+    print('</div>', file=indexFilePointer)
+    print(getIndexPageFooter(pageNumber,numberOfPages), file=indexFilePointer)
     indexFilePointer.close()
     os.chmod(indexFilePointer.name,0o644)
 
@@ -160,23 +159,23 @@ def getPaginationSection(pageNumber,numberOfPages):
     <div class="col-xs-12">
     <div class="pull-right">
     <nav>
-    <ul class="pagination">
-    '''
+        <ul class="pagination">
+'''
 
     if pageNumber == 1:
-        html += '<li class="disabled"><a href="#">&laquo;</a></li>\n'
+        html += '          <li class="disabled"><a href="#">&laquo;</a></li>\n'
     else:
-        html += '<li><a href="../page{0}/">&laquo;</a></li>\n'.format(pageNumber-1)
+        html += '          <li><a href="../page{0}/">&laquo;</a></li>\n'.format(pageNumber-1)
 
-    for number in xrange(1,numberOfPages+1):
-        html += '<li{0}><a href="../page{1}/">{1}</a></li>\n'.format(' class="current"' if number == pageNumber else '', number)
+    for number in range(1,numberOfPages+1):
+        html += '          <li{0}><a href="../page{1}/">{1}</a></li>\n'.format(' class="current"' if number == pageNumber else '', number)
 
     if pageNumber == numberOfPages:
-        html += '<li class="disabled"><a href="#">&raquo;</a></li>\n'
+        html += '          <li class="disabled"><a href="#">&raquo;</a></li>\n'
     else:
-        html += '<li><a href="../page{0}/">&raquo;</a></li>\n'.format(pageNumber+1)
+        html += '          <li><a href="../page{0}/">&raquo;</a></li>\n'.format(pageNumber+1)
 
-    html += '</ul></nav></div></div></div>\n'
+    html += '        </ul>\n    </nav>\n    </div>\n    </div>\n</div>\n'
 
     return html
 
@@ -342,7 +341,7 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
         else:
             nextHTML = str(next) + ".html"
 
-    linkLine = '''    <a title="Previous Photo" href="{0}"><img src="/images/reverse.png" width="32" height="32" alt="<-"></a>
+    linkLine = '''<a title="Previous Photo" href="{0}"><img src="/images/reverse.png" width="32" height="32" alt="<-"></a>
     <a title="Return to Index" href="index.html"><img src="/images/stop.png" width="32" height="32" alt="||"></a>
     <a title="Next Photo" href="{1}"><img src="/images/forward.png" width="32" height="32" alt="->"></a>'''.format(prevHTML,nextHTML)
 
@@ -357,17 +356,19 @@ def createIndividualHTMLFile(workingDirectory,imageFile,numberOfPhotos,pageNumbe
        filename=os.path.basename(imageFile.path).lower()
     )
 
-    filePath = os.path.join(workingDirectory,str(index) + ".html")
+    filePath = os.path.join(workingDirectory,f"{index}.html")
     with open(filePath,'w') as htmlFile:
         print(html,file=htmlFile)
 
     os.chmod(filePath,0o644)
 
 
-class ImageFile(object):
+class ImageFile(os.PathLike):
     """Class that holds the image path and the image's dimensions"""
     def __init__(self,path):
-        self.path = path
+        self.path   = path
+        self.width  = -1
+        self.height = -1
 
     def isPortrait(self):
         return self.width > self.height
@@ -388,20 +389,11 @@ class ImageFile(object):
     def scaledSize(self):
         return (self.scaledWidth,self.scaledHeight)
 
-
-    # duck typing methods. this class will be used in place of a str in several spots
+    def __fspath__(self):
+        return self.path
 
     def __str__(self):
         return self.path
-
-    def rfind(self,target):
-        return self.path.rfind(target)
-
-    def __getitem__(self,key):
-        return self.path.__getitem__(key)
-
-    def endswith(self,suffix):
-        return self.path.endswith(suffix)
 
 
 if __name__ == '__main__':

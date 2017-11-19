@@ -75,7 +75,7 @@ def getDate(filePath):
 def createDirectory(path,allowExisting=False):
     try:
         os.mkdir(path)
-        os.chmod(path,0755)
+        os.chmod(path,0o755)
         return os.path.abspath(path)
     except OSError:
         if allowExisting:
