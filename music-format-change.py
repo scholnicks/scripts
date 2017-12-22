@@ -44,7 +44,6 @@ def main(files):
     convertableFiles = [f for f in files if f.endswith(tuple(ENCODERS.keys()))]
     for index,musicFile in enumerate(convertableFiles,1):
         destinationFile = convertFile(musicFile)
-        print(destinationFile,destinationFile.endswith(".mp3"))
         if destinationFile.endswith(".mp3"):
             addMP3Tags(destinationFile,index,len(convertableFiles))
 
