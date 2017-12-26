@@ -18,9 +18,19 @@ Options:
     -w, --wav           Convert to WAV format
     -v, --version       Prints the version
 
+music-format-change uses several external tools:
+* sox
+* lame
+* eyeD3
+* libmagic (required by eyeD3)
+
+Despite eyeD3 being a Python module, music-format-change uses the command line version. I could not figure out how to specify
+track-total using the Python module directly, the documentation is lacking.
+
 (c) Steven Scholnick <scholnicks@gmail.com>
 
 The music-format-change source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
+
 """
 
 import sys
@@ -56,7 +66,7 @@ def filename(filenameWithExtension):
 
 def convertFile(musicFile):
     '''Converts the musicFile to the destination format'''
-    extension = getDestinationFormat()
+    extension           = getDestinationFormat()
     destinationFilename = filename(musicFile) + '.' + extension
     if not arguments['--quiet']:
         print(f"Converting {musicFile} to {destinationFilename}")
