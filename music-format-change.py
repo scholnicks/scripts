@@ -8,12 +8,12 @@ Usage:
    music-format-change [options] <files> ...
 
 Options:
-    -a, --aiff          Convert to AIFF (default)
+    -a, --aiff          Convert to AIFF
     --album=<album>     MP3 Album Tag Info
     --artist=<artist>   MP3 Artist Tag Info
-    -d, --delete        Delete the input file after conversion
+    -k, --keep          Keep the input file after conversion
     -h, --help          Show this help screen
-    -3, --mp3           Convert to MP3
+    -3, --mp3           Convert to MP3 (default)
     -q, --quiet         Quiet mode
     -w, --wav           Convert to WAV format
     -v, --version       Prints the version
@@ -44,12 +44,16 @@ ENCODERS = {
     'wav':  '/usr/local/bin/sox -q'
 }
 
-CONVERT_COMMAND_LINE = '{0} "{1}" "{2}" 1>/dev/null 2>&1'
+CONVERT_COMMAND_LINE = '{} "{}" "{}" 1>/dev/null 2>&1'
 EYED3_COMMAND_LINE   = 'eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --track {} --track-total {} "{}" 1>/dev/null 2>&1'
 
 
 def main(files):
     '''Main method'''
+
+    if 'mp3' == getDestinationFormat() and not (arguments['--album'] and arguments['--artist']):
+        raise SystemExit('--album and --artist are required with mp3 as the destination format')
+
     convertableFiles = [f for f in files if f.endswith(tuple(ENCODERS.keys()))]
     for index,musicFile in enumerate(convertableFiles,1):
         destinationFile = convertFile(musicFile)
@@ -73,7 +77,7 @@ def convertFile(musicFile):
 
     os.system(CONVERT_COMMAND_LINE.format(ENCODERS[extension],musicFile,destinationFilename))
 
-    if arguments['--delete']:
+    if not arguments['--keep']:
         os.unlink(musicFile)
 
     return destinationFilename
@@ -98,10 +102,10 @@ def getDestinationFormat():
     '''Returns the destination format based on the command line arguments'''
     if arguments['--wav']:
         return 'wav'
-    elif arguments['--mp3']:
-        return 'mp3'
-    else:
+    elif arguments['--aiff']:
         return 'aiff'
+    else:
+        return 'mp3'
 
 
 if __name__ == '__main__':
