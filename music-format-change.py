@@ -15,6 +15,7 @@ Options:
     -h, --help          Show this help screen
     -3, --mp3           Convert to MP3 (default)
     -q, --quiet         Quiet mode
+    -t, --tag           Add the MP3 Tags
     -w, --wav           Convert to WAV format
     -v, --version       Prints the version
 
@@ -56,7 +57,11 @@ def main(files):
 
     convertableFiles = [f for f in files if f.endswith(tuple(ENCODERS.keys()))]
     for index,musicFile in enumerate(convertableFiles,1):
-        destinationFile = convertFile(musicFile)
+        if arguments['--tag']:
+            destinationFile = musicFile
+        else:
+            destinationFile = convertFile(musicFile)
+
         if destinationFile.endswith(".mp3"):
             addMP3Tags(destinationFile,index,len(convertableFiles))
 
