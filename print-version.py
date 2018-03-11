@@ -7,8 +7,6 @@ print-version: Reads an app's Info.plist and prints the version number for the a
 Usage:
    print-version <application>
 
-Inspired by: https://github.com/tjluoma/is-dropbox-current (zsh version)
-
 Options:
     -h, --help     Show this help screen
     --version      Prints the version
