@@ -8,7 +8,7 @@ Usage:
     album [options] <title> <source-directory>
 
 Options:
-   -c, --cover=<cover>                Sets the cover photo for social media embedded links [default: https://scholnick.nett/images/opengraph-image.jpg]
+   -c, --cover=<cover>                Sets the cover photo for social media embedded links [default: https://scholnick.net/images/opengraph-image.jpg]
    -h, --help                         Shows this help message and exits
    -d, --destination=<destination>    Sets the folder destination, [default: photos]
    -l, --leave                        Do not convert the photos. Leave them as is.
@@ -16,13 +16,13 @@ Options:
    -o, --overwrite                    Overwrites the destination directory with the new set of photos.
    -p, --page=<photos per page>       Sets the maximum number of photos per page, [default: 48]
    -q, --quiet                        Toggles quiet mode
-   -u, --url=<url>                    URL for the social media embedded links [default: https://scholnick.nett]
+   -u, --url=<url>                    URL for the social media embedded links [default: https://scholnick.net]
    -v, --verbose                      Toggles verbose mode
    --version                          Prints the version
 
 (c) Steven Scholnick <scholnicks@gmail.com>
 
-The album source code is published under a MIT license. See https://scholnick.nett/license.txt for details.
+The album source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 
 """
 
@@ -256,7 +256,7 @@ SINGLE_PAGE_TEMPLATE = '''<!DOCTYPE html>
     <meta property="og:type"         content="website">
     <meta property="og:title"        content="Steven Scholnick : $pictureSetTitle - Photo $index">
     <meta property="og:description"  content="Steven Scholnick : $pictureSetTitle - Photo $index">
-    <meta property="og:url"          content="https://scholnick.nett/">
+    <meta property="og:url"          content="https://scholnick.net/">
     <meta property="og:site_name"    content="Steven Scholnick">
     <meta property="og:image"        content="$coverPhoto">
 

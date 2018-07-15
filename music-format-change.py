@@ -32,7 +32,7 @@ track-total using the Python module directly; the documentation is lacking.
 
 (c) Steven Scholnick <scholnicks@gmail.com>
 
-The music-format-change source code is published under a MIT license. See https://scholnick.nett/license.txt for details.
+The music-format-change source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 
 """
 
