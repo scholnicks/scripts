@@ -36,7 +36,7 @@ Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
 where file_0003.txt is directory2/file3.txt
 
 (c) Steven Scholnick <scholnicks@gmail.com>
-The rename source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
+The rename source code is published under a MIT license. See https://scholnick.nett/license.txt for details.
 """
 
 from __future__ import print_function

@@ -21,7 +21,7 @@ Requires external modules that can be installed from PyPI with:
 
 (c) Steven Scholnick <scholnicks@gmail.com>
 
-The checklinks source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
+The checklinks source code is published under a MIT license. See https://scholnick.nett/license.txt for details.
 """
 
 from __future__ import print_function

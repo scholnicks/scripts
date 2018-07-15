@@ -6,7 +6,7 @@
 # than killall in that it can kill an app by just part of the name
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
-# The zap source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
+# The zap source code is published under a MIT license. See https://scholnick.nett/license.txt for details.
 
 use strict;
 use warnings;

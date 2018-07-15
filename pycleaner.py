@@ -23,7 +23,7 @@ Options:
 
 (c) Steven Scholnick <scholnicks@gmail.com>
 
-The pycleaner source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
+The pycleaner source code is published under a MIT license. See https://scholnick.nett/license.txt for details.
 """
 
 from __future__ import print_function

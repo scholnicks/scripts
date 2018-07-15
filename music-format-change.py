@@ -25,12 +25,14 @@ music-format-change uses several external tools:
 * eyeD3
 * libmagic (required by eyeD3)
 
+On macOS, these can all easily be installed using brew, brew install sox lame eyeD3
+
 Despite eyeD3 being a Python module, music-format-change uses the command line version. I could not figure out how to specify
-track-total using the Python module directly, the documentation is lacking.
+track-total using the Python module directly; the documentation is lacking.
 
 (c) Steven Scholnick <scholnicks@gmail.com>
 
-The music-format-change source code is published under a MIT license. See http://www.scholnick.net/license.txt for details.
+The music-format-change source code is published under a MIT license. See https://scholnick.nett/license.txt for details.
 
 """
 
