@@ -16,10 +16,10 @@ Options:
     -l, --lower                                Translates the filenames to lowercase
     -o, --order                                Take any input files and rename them in numerical order (01 - File.mp3, 02 - File.mp3, etc)
     -p, --prepend=<prefix>                     Prefix to be prepended
-    -r, --remove=<pattern>                     Pattern to be removed, can be a re
+    -r, --remove=<pattern>                     Pattern to be removed, can be a regex
     --random                                   Randomizes the files (--prepend can be used to specify the prefix, defaults to "file")
     --merge                                    Merges the files in order specfied on command line (See below for details/examples)
-    -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new, old can be a re)
+    -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new, old can be a regex)
     -t, --test                                 Test mode (Just prints the rename operations)
     -v, --verbose                              Verbose mode
     --version                                  Prints the version
@@ -184,7 +184,7 @@ def fixNumbers(fileName,delimiter,numberLength):
 
 if __name__ == '__main__':
     from docopt import docopt
-    arguments = docopt(__doc__, version='1.1.1')
+    arguments = docopt(__doc__, version='1.2.0')
 
     if arguments['--test']:
         arguments['--verbose'] = True
