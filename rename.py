@@ -14,13 +14,14 @@ Options:
     -f, --fix=<maximum number of digits>       Fixes numerical file names
     -h, --help                                 Show this help screen
     -l, --lower                                Translates the filenames to lowercase
+    -o, --order                                Take any input files and rename them in numerical order (01 - File.mp3, 02 - File.mp3, etc)
     -p, --prepend=<prefix>                     Prefix to be prepended
-    -r, --remove=<pattern>                     Pattern to be removed
+    -r, --remove=<pattern>                     Pattern to be removed, can be a re
     --random                                   Randomizes the files (--prepend can be used to specify the prefix, defaults to "file")
     --merge                                    Merges the files in order specfied on command line (See below for details/examples)
-    -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new)
+    -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new, old can be a re)
     -t, --test                                 Test mode (Just prints the rename operations)
-    -v, --verbose                              Verbose Mode
+    -v, --verbose                              Verbose mode
     --version                                  Prints the version
 
 Using merge
@@ -42,6 +43,7 @@ The rename source code is published under a MIT license. See https://scholnick.n
 from __future__ import print_function
 import os, sys, re, random
 
+
 def main(files):
     """Main Method"""
     if arguments['--verbose']:
@@ -51,11 +53,24 @@ def main(files):
         randomizeFiles(files)
     elif arguments['--merge']:
         mergeFiles(files)
+    elif arguments['--order']:
+        orderFiles(files)
     else:
         for fileName in files:
             performRenameOperation(fileName)
 
     sys.exit(0)
+
+def orderFiles(files):
+    '''Orders the files'''
+    filename_template = r'{num:02d} - {filename}' if len(files) < 100 else r'{num:04d} - {filename}'
+
+    for (index,current_file_path) in enumerate(sorted(files),1):
+        new_file_path = os.path.join(
+            os.path.dirname(current_file_path),
+            filename_template.format(num=index,filename=os.path.basename(current_file_path))
+        )
+        rename_file(current_file_path,new_file_path)
 
 
 def randomizeFiles(files):
@@ -71,7 +86,7 @@ def randomizeFiles(files):
 
     # rename the files in numeric order
     for (index,filename) in enumerate(files,1):
-        new_file_name = os.path.join(os.path.dirname(filename),'{prefix}_{num:04d}'.format(prefix=prefix,num=index) + extension)
+        new_file_name = os.path.join(os.path.dirname(filename),'{prefix}_{num:04d}{extension}'.format(prefix=prefix,num=index,extension=extension))
         rename_file(filename,new_file_name)
 
 
@@ -86,7 +101,7 @@ def mergeFiles(files):
 
     prefix = arguments['--prepend'] if arguments['--prepend'] else 'file'
 
-    # rename the files in command line specified order
+    # rename the files in argument specified order
     for (index,filename) in enumerate(files,1):
         new_file_name = os.path.join(arguments['--directory'],'{prefix}_{num:04d}'.format(prefix=prefix,num=index) + extension)
         rename_file(filename,new_file_name)
@@ -148,8 +163,7 @@ def substitute(fileName,pattern):
         (old,new) = re.match(r'^(.*)/(.*)$',pattern).groups()
         return re.sub(old,new,fileName)
     except AttributeError:
-        print("rename: Illegal substitute pattern. Pattern must be old/new",file=sys.stderr)
-        sys.exit(-1)
+        raise SystemExit("rename: Illegal substitute pattern. Pattern must be old/new")
 
 
 def fixNumbers(fileName,delimiter,numberLength):
@@ -162,7 +176,6 @@ def fixNumbers(fileName,delimiter,numberLength):
 
     sequenceValue = number
 
-    # 2/3 compatible. in 2, the list will be generated and thrown away
     for i in range(len(number),int(numberLength)):
         sequenceValue = "0" + sequenceValue
 
