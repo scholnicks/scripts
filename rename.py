@@ -86,7 +86,10 @@ def randomizeFiles(files):
 
     # rename the files in numeric order
     for (index,filename) in enumerate(files,1):
-        new_file_name = os.path.join(os.path.dirname(filename),'{prefix}_{num:04d}{extension}'.format(prefix=prefix,num=index,extension=extension))
+        new_file_name = os.path.join(
+            os.path.dirname(filename),
+            '{prefix}_{num:04d}{extension}'.format(prefix=prefix,num=index,extension=extension)
+        )
         rename_file(filename,new_file_name)
 
 
