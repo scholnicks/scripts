@@ -11,7 +11,7 @@ Options:
     -a, --aiff              Convert to AIFF
     --album=<album>         MP3 Album Tag Info
     --artist=<artist>       MP3 Artist Tag Info
-    -d, --disc=<discNumber> Disk number [Default: 0]
+    -d, --disc=<discNumber> Disk number [default: 0]
     -k, --keep              Keep the input file after conversion
     -h, --help              Show this help screen
     -3, --mp3               Convert to MP3 (default)
@@ -49,7 +49,7 @@ ENCODERS = {
 }
 
 CONVERT_COMMAND_LINE = '{} "{}" "{}" 1>/dev/null 2>&1'
-EYED3_COMMAND_LINE   = 'eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'
+EYED3_COMMAND_LINE   = 'eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc-num {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'
 MP3_EXTENSION        = 'mp3'
 
 def main(files):
@@ -115,7 +115,7 @@ def addMP3Tags(destinationFile,index,numberOfFiles):
         arguments['--album'] if arguments['--album'] else '',
         arguments['--artist'] if arguments['--artist'] else '',
         arguments['--artist'] if arguments['--artist'] else '',
-        arguments['--disc'],
+        arguments['--disc'] if arguments['--disc'] else 0,
         index,
         numberOfFiles,
         destinationFile
