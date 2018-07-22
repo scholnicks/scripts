@@ -8,16 +8,17 @@ Usage:
    music-format-change [options] <files> ...
 
 Options:
-    -a, --aiff          Convert to AIFF
-    --album=<album>     MP3 Album Tag Info
-    --artist=<artist>   MP3 Artist Tag Info
-    -k, --keep          Keep the input file after conversion
-    -h, --help          Show this help screen
-    -3, --mp3           Convert to MP3 (default)
-    -q, --quiet         Quiet mode
-    -t, --tag           Add the MP3 Tags
-    -w, --wav           Convert to WAV format
-    -v, --version       Prints the version
+    -a, --aiff              Convert to AIFF
+    --album=<album>         MP3 Album Tag Info
+    --artist=<artist>       MP3 Artist Tag Info
+    -d, --disc=<discNumber> Disk number [Default: 0]
+    -k, --keep              Keep the input file after conversion
+    -h, --help              Show this help screen
+    -3, --mp3               Convert to MP3 (default)
+    -q, --quiet             Quiet mode
+    -t, --tag               Add the MP3 Tags
+    -w, --wav               Convert to WAV format
+    -v, --version           Prints the version
 
 music-format-change uses several external tools:
 * sox
@@ -48,13 +49,19 @@ ENCODERS = {
 }
 
 CONVERT_COMMAND_LINE = '{} "{}" "{}" 1>/dev/null 2>&1'
-EYED3_COMMAND_LINE   = 'eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --track {} --track-total {} "{}" 1>/dev/null 2>&1'
-
+EYED3_COMMAND_LINE   = 'eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'
+MP3_EXTENSION        = 'mp3'
 
 def main(files):
     '''Main method'''
 
-    if 'mp3' == getDestinationFormat() and not (arguments['--album'] and arguments['--artist']):
+    destinationFormat = getDestinationFormat()
+    inputFormat       = calculateInputFormat(files)
+
+    if inputFormat == MP3_EXTENSION and destinationFormat == MP3_EXTENSION:
+        arguments['--tag'] = True
+
+    if destinationFormat == MP3_EXTENSION and not (arguments['--album'] and arguments['--artist']):
         raise SystemExit('--album and --artist are required with mp3 as the destination format')
 
     convertableFiles = [f for f in files if f.endswith(tuple(ENCODERS.keys()))]
@@ -64,15 +71,19 @@ def main(files):
         else:
             destinationFile = convertFile(musicFile)
 
-        if destinationFile.endswith(".mp3"):
+        if destinationFile.endswith(MP3_EXTENSION):
             addMP3Tags(destinationFile,index,len(convertableFiles))
 
     sys.exit(0)
 
 
-def filename(filenameWithExtension):
-    '''Returns the filename without the extension'''
-    return os.path.splitext(filenameWithExtension)[0]
+def calculateInputFormat(files):
+    '''determines the extension'''
+    extensions = set((os.path.splitext(f)[1].lower() for f in files))
+    if len(extensions) > 1:
+        raise SystemExit("Only one type of input file allowed. Found: {0}".format(", ".join(extensions)))
+
+    return extensions.pop()[1:]
 
 
 def convertFile(musicFile):
@@ -90,6 +101,11 @@ def convertFile(musicFile):
     return destinationFilename
 
 
+def filename(filenameWithExtension):
+    '''Returns the filename without the extension'''
+    return os.path.splitext(filenameWithExtension)[0]
+
+
 def addMP3Tags(destinationFile,index,numberOfFiles):
     '''Adds the MP3 Tags using the eyeD3 command line tool'''
     match = re.match(r'^[0-9]+ - (.*)\.mp3$',destinationFile)
@@ -99,6 +115,7 @@ def addMP3Tags(destinationFile,index,numberOfFiles):
         arguments['--album'] if arguments['--album'] else '',
         arguments['--artist'] if arguments['--artist'] else '',
         arguments['--artist'] if arguments['--artist'] else '',
+        arguments['--disc'],
         index,
         numberOfFiles,
         destinationFile
@@ -112,7 +129,7 @@ def getDestinationFormat():
     elif arguments['--aiff']:
         return 'aiff'
     else:
-        return 'mp3'
+        return MP3_EXTENSION
 
 
 if __name__ == '__main__':
