@@ -1,11 +1,14 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The rename source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 
 """
 rename: Renames files in powerful ways
 
 Usage:
-    rename [options] <files> ...
+    rename [options] [<files>...]
 
 Options:
     -a, --append=<suffix>                      Suffix to be appended
@@ -14,30 +17,16 @@ Options:
     -f, --fix=<maximum number of digits>       Fixes numerical file names
     -h, --help                                 Show this help screen
     -l, --lower                                Translates the filenames to lowercase
-    -o, --order                                Take any input files and rename them in numerical order (01 - File.mp3, 02 - File.mp3, etc)
+    --merge                                    Merges the files in order specfied on command line
+    -o, --order                                Take any input files and renames them in numerical order
     -p, --prepend=<prefix>                     Prefix to be prepended
+    --random                                   Randomizes the files
     -r, --remove=<pattern>                     Pattern to be removed, can be a regex
-    --random                                   Randomizes the files (--prepend can be used to specify the prefix, defaults to "file")
-    --merge                                    Merges the files in order specfied on command line (See below for details/examples)
     -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new, old can be a regex)
     -t, --test                                 Test mode (Just prints the rename operations)
+    --usage                                    Detailed usage information
     -v, --verbose                              Verbose mode
     --version                                  Prints the version
-
-Using merge
-
-merge requires a directory to be specified. prepend (defaults to file) is used for the base name for the merged files.
-For example to merge files from two different directories into the current directory:
-
-rename --merge --directory=. directory1/* directory2/*
-
-Input Files: directory1/file1.txt directory1/file2.txt directory2/file1.txt
-Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
-
-where file_0003.txt is directory2/file3.txt
-
-(c) Steven Scholnick <scholnicks@gmail.com>
-The rename source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 """
 
 from __future__ import print_function
@@ -46,6 +35,13 @@ import os, sys, re, random
 
 def main(files):
     """Main Method"""
+
+    if arguments['--usage']:
+        usage()
+
+    if not files:
+        usage()
+
     if arguments['--verbose']:
         print("Renaming: {0}\n".format(", ".join(files)))
 
@@ -183,6 +179,41 @@ def fixNumbers(fileName,delimiter,numberLength):
         sequenceValue = "0" + sequenceValue
 
     return prefix + delimiter + sequenceValue + extension
+
+def usage():
+    print(__doc__ + """
+
+Merge
+-----
+
+merge requires a directory to be specified. prepend (defaults to file) can be used for the base name for the merged files.
+For example to merge files from two different directories into the current directory:
+
+rename --merge --directory=. directory1/* directory2/*
+
+Input Files: directory1/file1.txt directory1/file2.txt directory2/file1.txt
+Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
+
+where file_0003.txt is directory2/file3.txt
+
+Order
+-----
+
+Adds a numerical prefix to sorted input files. Example:
+
+rename --order filea.mp3 fileb.mp3
+
+becomes:
+
+01 - filea.mp3 02 - fileb.mp3
+
+Random
+------
+
+Randomly names files. --prepend can be use to specify the base filename (defaults to file)
+
+""")
+    sys.exit(0)
 
 
 if __name__ == '__main__':
