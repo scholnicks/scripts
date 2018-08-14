@@ -1,11 +1,17 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
+#
+# music-format-change uses several external tools: sox, lame, eyeD3.
+# On macOS, these can all easily be installed using brew, brew install sox lame eyeD3
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The music-format-change source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 
 """
 music-format-change: Music Format Changer
 
 Usage:
-   music-format-change [options] <files> ...
+    music-format-change [options] <files>...
 
 Options:
     -a, --aiff              Convert to AIFF
@@ -19,22 +25,6 @@ Options:
     -t, --tag               Add the MP3 Tags
     -w, --wav               Convert to WAV format
     -v, --version           Prints the version
-
-music-format-change uses several external tools:
-* sox
-* lame
-* eyeD3
-* libmagic (required by eyeD3)
-
-On macOS, these can all easily be installed using brew, brew install sox lame eyeD3
-
-Despite eyeD3 being a Python module, music-format-change uses the command line version. I could not figure out how to specify
-track-total using the Python module directly; the documentation is lacking.
-
-(c) Steven Scholnick <scholnicks@gmail.com>
-
-The music-format-change source code is published under a MIT license. See https://scholnick.net/license.txt for details.
-
 """
 
 import sys

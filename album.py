@@ -1,5 +1,8 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The album source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 
 """
 album:  Creates a album of photos complete with thumbnails.
@@ -19,18 +22,12 @@ Options:
    -u, --url=<url>                    URL for the social media embedded links [default: https://scholnick.net]
    -v, --verbose                      Toggles verbose mode
    --version                          Prints the version
-
-(c) Steven Scholnick <scholnicks@gmail.com>
-
-The album source code is published under a MIT license. See https://scholnick.net/license.txt for details.
-
 """
 
 from __future__ import print_function
 from PIL import Image
 import os, sys, math, shutil
 from string import Template
-
 
 def main(startingDirectory):
     destinationDirectory = arguments['--destination']
