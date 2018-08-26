@@ -1,17 +1,17 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
 #
-# music-format-change uses several external tools: sox, lame, eyeD3.
-# On macOS, these can all easily be installed using brew, brew install sox lame eyeD3
+# sak uses several external tools: sox, lame, eyeD3.
+# On macOS, these can all easily be installed using homebrew.
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
-# The music-format-change source code is published under a MIT license. See https://scholnick.net/license.txt for details.
+# The sak source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 
 """
-music-format-change: Music Format Changer
+sak: Song Army Knife, manipulate song files in several ways
 
 Usage:
-    music-format-change [options] <files>...
+    sak [options] <files>...
 
 Options:
     -a, --aiff              Convert to AIFF
