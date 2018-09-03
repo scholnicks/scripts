@@ -1,27 +1,25 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
+#
+# check-links uses several Python modules: lxml, requests, and beautifulsoup4.
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The check-links source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 
-"""checklinks - validate links in one or more HTML files. The HTML files can exist locally or be accessible via a URL.
+"""
+check-links - validate links in one or more HTML files. The HTML files can exist locally or be accessible via a URL.
 
 Usage:
-    checklinks [options]  <filesOrURLs> ...
+    check-links [options]  <filesOrURLs> ...
 
 Options:
+    -e, --external                Validate external links only
     -h, --help                    Show this help screen
     -i, --image                   Turns on image checking
     -o, --ok                      Shows the good links
     -r, --root=<root_directory>   Sets the root web directory
     -v, --verbose                 Verbose Mode
     --version                     Prints the version
-
-Requires external modules that can be installed from PyPI with:
-    pip install lxml
-    pip install requests
-    pip install beautifulsoup4
-
-(c) Steven Scholnick <scholnicks@gmail.com>
-
-The checklinks source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 """
 
 from __future__ import print_function
@@ -71,6 +69,7 @@ def processFile(filePath):
         soup = BeautifulSoup(fp,'lxml')
         checkLinks(soup.find_all('link'),'href')
         checkLinks(soup.find_all('a'),'href')
+
         if arguments['--image']:
             checkLinks(soup.find_all('img'),'src')
         checkLinks(soup.find_all('script'),'src')
@@ -102,7 +101,7 @@ def checkRemote(link):
 
 def checkLocal(path):
     """Checks for the existence of a local file on disk"""
-    if 'mailto' in path or path.startswith("#"):
+    if 'mailto' in path or path.startswith("#") or arguments['--external']:
         return
 
     if path[0] == '/' and arguments['--root']:
