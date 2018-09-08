@@ -32,15 +32,18 @@ import os
 import re
 
 
+FFMPEG_COMMAND       = 'ffmpeg -i "{}" -acodec libmp3lame -ab 256k "{}" 1>/dev/null 2>&1'
+CONVERT_COMMAND_LINE = '{} "{}" "{}" 1>/dev/null 2>&1'
+EYED3_COMMAND_LINE   = 'eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc-num {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'
+MP3_EXTENSION        = 'mp3'
+
 ENCODERS = {
     'aiff': '/usr/local/bin/sox -q',
+    'm4a':  FFMPEG_COMMAND,
     'mp3':  '/usr/local/bin/lame --nohist --silent',
     'wav':  '/usr/local/bin/sox -q'
 }
 
-CONVERT_COMMAND_LINE = '{} "{}" "{}" 1>/dev/null 2>&1'
-EYED3_COMMAND_LINE   = 'eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc-num {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'
-MP3_EXTENSION        = 'mp3'
 
 def main(files):
     '''Main method'''
@@ -59,7 +62,7 @@ def main(files):
         if arguments['--tag']:
             destinationFile = musicFile
         else:
-            destinationFile = convertFile(musicFile)
+            destinationFile = convertFile(musicFile,inputFormat)
 
         if destinationFile.endswith(MP3_EXTENSION):
             addMP3Tags(destinationFile,index,len(convertableFiles))
@@ -76,14 +79,17 @@ def calculateInputFormat(files):
     return extensions.pop()[1:]
 
 
-def convertFile(musicFile):
+def convertFile(musicFile,inputFormat):
     '''Converts the musicFile to the destination format'''
     extension           = getDestinationFormat()
     destinationFilename = filename(musicFile) + '.' + extension
     if not arguments['--quiet']:
         print(f"Converting {musicFile} to {destinationFilename}")
 
-    os.system(CONVERT_COMMAND_LINE.format(ENCODERS[extension],musicFile,destinationFilename))
+    if inputFormat == 'm4a':
+        os.system(FFMPEG_COMMAND.format(musicFile,destinationFilename))
+    else:
+        os.system(CONVERT_COMMAND_LINE.format(ENCODERS[extension],musicFile,destinationFilename))
 
     if not arguments['--keep']:
         os.unlink(musicFile)
