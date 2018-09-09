@@ -24,6 +24,7 @@ Options:
     -r, --remove=<pattern>                     Pattern to be removed, can be a regex
     -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new, old can be a regex)
     -t, --test                                 Test mode (Just prints the rename operations)
+    --titles=<input file with titles>          Rename the files by names in the specified input file
     --usage                                    Detailed usage information
     -v, --verbose                              Verbose mode
     --version                                  Prints the version
@@ -49,6 +50,8 @@ def main(files):
         randomizeFiles(files)
     elif arguments['--merge']:
         mergeFiles(files)
+    elif arguments['--titles']:
+        nameFilesByInputFile(files)
     elif arguments['--order']:
         orderFiles(files)
     else:
@@ -56,6 +59,25 @@ def main(files):
             performRenameOperation(fileName)
 
     sys.exit(0)
+
+def nameFilesByInputFile(files):
+    '''Names files by using an input text file'''
+    extension = calculateExtension(files)
+
+    exportFileNames = []
+    with open(arguments['--titles'],'r') as fp:
+        exportFileNames = [line.strip() for line in fp if line.strip()]
+
+    if len(files) != len(exportFileNames):
+        raise SystemExit("{} filenames ({}) and files length ({}) do not match".format(arguments['--titles'],len(exportFileNames),len(files)))
+
+    filename_template = r'{num:02d} - {filename}{extension}' if len(files) < 100 else r'{num:04d} - {filename}{extension}'
+    index = 1
+    for current_file_path,new_file_name in zip(files,exportFileNames):
+        new_file_path = os.path.join( os.path.dirname(current_file_path), filename_template.format(num=index,filename=new_file_name,extension=extension) )
+        rename_file(current_file_path,new_file_path)
+        index += 1
+
 
 def orderFiles(files):
     '''Orders the files'''
