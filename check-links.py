@@ -92,9 +92,9 @@ def checkLinks(tags,externalAttributeName):
 def checkRemote(link):
     """checks a remote (http/https) link"""
     try:
-        request = requests.get(link)
-        if request.status_code != 200 or arguments['--ok']:
-            print(FORMAT.format(link, str(request.status_code)))
+        response = requests.get(link)
+        if response.status_code != 200 or arguments['--ok']:
+            print(FORMAT.format(link, str(response.status_code)))
     except requests.exceptions.RequestException as e:
         print(FORMAT.format(link,e.message if arguments['--verbose'] else 'Cannot contact host'))
 
