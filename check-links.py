@@ -22,7 +22,6 @@ Options:
     --version                     Prints the version
 """
 
-from __future__ import print_function
 from bs4 import BeautifulSoup
 import os, sys
 import requests

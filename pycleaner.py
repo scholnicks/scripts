@@ -26,7 +26,6 @@ Options:
 The pycleaner source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 """
 
-from __future__ import print_function
 import os, sys, re
 
 

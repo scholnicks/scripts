@@ -24,7 +24,6 @@ For all files starting with the directory website, all foo references are change
 Similar to find . -name "*.html" -print0 | xargs -0 sed -i '' -e 's/foo/bar/g'
 """
 
-from __future__ import print_function
 import os, sys, re
 
 def main(startingDirectory):

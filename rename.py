@@ -30,7 +30,6 @@ Options:
     --version                                  Prints the version
 """
 
-from __future__ import print_function
 import os, sys, re, random
 
 
