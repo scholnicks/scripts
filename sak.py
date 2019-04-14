@@ -1,7 +1,7 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
 #
-# sak uses several external tools: sox, lame, eyeD3.
+# sak uses several external tools: sox, ffmpeg, lame, eyeD3.
 # On macOS, these can all easily be installed using homebrew.
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
@@ -44,6 +44,7 @@ ENCODERS = {
     'wav':  '/usr/local/bin/sox -q'
 }
 
+arguments = None        # quiet VS Code's linter
 
 def main(files):
     '''Main method'''
@@ -87,12 +88,15 @@ def convertFile(musicFile,inputFormat):
         print(f"Converting {musicFile} to {destinationFilename}")
 
     if inputFormat == 'm4a':
-        os.system(FFMPEG_COMMAND.format(musicFile,destinationFilename))
+        ret = os.system(FFMPEG_COMMAND.format(musicFile,destinationFilename))
     else:
-        os.system(CONVERT_COMMAND_LINE.format(ENCODERS[extension],musicFile,destinationFilename))
+        ret = os.system(CONVERT_COMMAND_LINE.format(ENCODERS[extension],musicFile,destinationFilename))
 
-    if not arguments['--keep']:
-        os.unlink(musicFile)
+    if ret != 0:
+        print(f"*** Unable to convert {musicFile}. Keeping original. ***")
+    else:
+        if not arguments['--keep']:
+            os.unlink(musicFile)
 
     return destinationFilename
 
