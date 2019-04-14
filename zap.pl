@@ -2,8 +2,7 @@
 #
 # zap:  kills open application by their name
 #
-# zap kills open application by their name.  It is different
-# than killall in that it can kill an app by just part of the name
+# zap kills open application by their name.  It is different than killall in that it can kill an app by just part of the name
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
 # The zap source code is published under a MIT license. See https://scholnick.net/license.txt for details.
