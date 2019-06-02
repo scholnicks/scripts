@@ -36,10 +36,7 @@ import os, sys, re, random
 def main(files):
     """Main Method"""
 
-    if arguments['--usage']:
-        usage()
-
-    if not files:
+    if arguments['--usage'] or not files:
         usage()
 
     if arguments['--verbose']:
@@ -128,7 +125,7 @@ def mergeFiles(files):
 
 
 def calculateExtension(files):
-    '''determines the extension'''
+    '''determines a single extension'''
     extensions = set((os.path.splitext(f)[1].lower() for f in files))
     if len(extensions) > 1:
         raise SystemExit("Only one extension allowed. Found: {0}".format(", ".join(extensions)))
@@ -239,7 +236,7 @@ Randomly names files. --prepend can be use to specify the base filename (default
 
 if __name__ == '__main__':
     from docopt import docopt
-    arguments = docopt(__doc__, version='1.2.0')
+    arguments = docopt(__doc__, version='rename 2.0.0')
 
     if arguments['--test']:
         arguments['--verbose'] = True
