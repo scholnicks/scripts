@@ -10,7 +10,6 @@ The ce source code is published under a MIT license. See https://scholnick.net/l
 
 """
 
-from __future__ import print_function
 import os, sys, glob
 import sqlite3
 
