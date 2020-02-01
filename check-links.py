@@ -4,7 +4,7 @@
 # check-links uses several Python modules: lxml, requests, and beautifulsoup4.
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
-# The check-links source code is published under a MIT license. See https://scholnick.net/license.txt for details.
+# The check-links source code is published under a MIT license.
 
 """
 check-links - validate links in one or more HTML files. The HTML files can exist locally or be accessible via a URL.

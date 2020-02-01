@@ -5,7 +5,7 @@
 # On macOS, these can all easily be installed using homebrew.
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
-# The sak source code is published under a MIT license. See https://scholnick.net/license.txt for details.
+# The sak source code is published under a MIT license.
 
 """
 sak: Song Army Knife, manipulate song files in several ways

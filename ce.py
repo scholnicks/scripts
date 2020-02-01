@@ -1,14 +1,10 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
-
-"""
-ce: Mac Contacts Exporter
-
-(c) Steven Scholnick <scholnicks@gmail.com>
-
-The ce source code is published under a MIT license. See https://scholnick.net/license.txt for details.
-
-"""
+#
+# ce: Mac Contacts Exporter
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The ce source code is published under a MIT license.
 
 import os, sys, glob
 import sqlite3

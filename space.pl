@@ -3,7 +3,7 @@
 # space:  Calculates disk space in MBs
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
-# The space source code is published under a MIT license. See https://scholnick.net/license.txt for details.
+# The space source code is published under a MIT license.
 
 use strict;
 use warnings;

@@ -1,5 +1,8 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The dateTree source code is published under a MIT license.
 
 """
 dateTree: Creates a tree of pictures separated into date directories
@@ -17,10 +20,6 @@ Options:
     -h, --help     Show this help screen
     -q, --quiet    Quiet Mode
     --version      Prints the version
-
-(c) Steven Scholnick <scholnicks@gmail.com>
-
-The dateTree source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 """
 
 import os, sys, shutil

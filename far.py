@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
-# The far source code is published under a MIT license. See https://scholnick.net/license.txt for details.
+# The far source code is published under a MIT license.
 
 """
 far: Find and replace all instances of a string with a new string in a directory and all its sub-directories.

@@ -1,5 +1,8 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The is-drop-current source code is published under a MIT license.
 
 """
 is-drop-current: Checks installed Dropbox version against latest version available.
@@ -13,10 +16,6 @@ Options:
     -h, --help     Show this help screen
     -v, --verbose  Verbose Mode
     --version      Prints the version
-
-(c) Steven Scholnick <scholnicks@gmail.com>
-
-The is-drop-current source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 """
 
 import sys, re

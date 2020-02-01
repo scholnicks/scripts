@@ -1,5 +1,8 @@
 #!/usr/bin/env python -B
 # -*- coding: utf-8 -*-
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The print-version source code is published under a MIT license.
 
 """
 print-version: Reads an app's Info.plist and prints the version number for the app
@@ -10,10 +13,6 @@ Usage:
 Options:
     -h, --help     Show this help screen
     --version      Prints the version
-
-(c) Steven Scholnick <scholnicks@gmail.com>
-
-The print-version source code is published under a MIT license. See https://scholnick.net/license.txt for details.
 """
 
 import sys

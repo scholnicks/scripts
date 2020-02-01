@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
-# The rename source code is published under a MIT license. See https://scholnick.net/license.txt for details.
+# The rename source code is published under a MIT license.
 
 """
 rename: Renames files in powerful ways
