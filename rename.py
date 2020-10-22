@@ -30,7 +30,10 @@ Options:
     --version                                  Prints the version
 """
 
-import os, sys, re, random
+import os
+import random
+import re
+import sys
 
 
 def main(files):
@@ -40,7 +43,7 @@ def main(files):
         usage()
 
     if arguments['--verbose']:
-        print("Renaming: {0}\n".format(", ".join(files)))
+        print("Renaming: {}\n".format(", ".join(files)))
 
     if arguments['--random']:
         randomizeFiles(files)
@@ -57,10 +60,9 @@ def main(files):
     sys.exit(0)
 
 def nameFilesByInputFile(files):
-    '''Names files by using an input text file'''
+    """Names files by using an input text file"""
     extension = calculateExtension(files)
 
-    exportFileNames = []
     with open(arguments['--titles'],'r') as fp:
         exportFileNames = [line.strip() for line in fp if line.strip()]
 
@@ -76,7 +78,7 @@ def nameFilesByInputFile(files):
 
 
 def orderFiles(files):
-    '''Orders the files'''
+    """Orders the files"""
     filename_template = r'{num:02d} - {filename}' if len(files) < 100 else r'{num:04d} - {filename}'
 
     for (index,current_file_path) in enumerate(sorted(files),1):
@@ -88,7 +90,7 @@ def orderFiles(files):
 
 
 def randomizeFiles(files):
-    '''randomly shuffles a list of files with the same extension'''
+    """randomly shuffles a list of files with the same extension"""
 
     # determine the extension
     extension = calculateExtension(files)
@@ -108,7 +110,7 @@ def randomizeFiles(files):
 
 
 def mergeFiles(files):
-    '''reorders a set of files in order in a target directory'''
+    """reorders a set of files in order in a target directory"""
 
     if not arguments['--directory']:
         raise SystemExit("--directory must be set")
@@ -125,18 +127,18 @@ def mergeFiles(files):
 
 
 def calculateExtension(files):
-    '''determines a single extension'''
+    """determines a single extension"""
     extensions = set((os.path.splitext(f)[1].lower() for f in files))
     if len(extensions) > 1:
-        raise SystemExit("Only one extension allowed. Found: {0}".format(", ".join(extensions)))
+        raise SystemExit("Only one extension allowed. Found: {}".format(", ".join(extensions)))
 
     return extensions.pop()
 
 
 def performRenameOperation(fileName):
-    """Performs a renaming operation on the specififed filename"""
+    """Performs a renaming operation on the specified filename"""
     if not os.path.exists(fileName):
-        print("{0} does not exist, skipping.".format(fileName),file=sys.stderr)
+        print("{} does not exist, skipping.".format(fileName),file=sys.stderr)
         return
 
     newFileName = fileName
@@ -168,7 +170,7 @@ def performRenameOperation(fileName):
 def rename_file(old_file_name, new_file_name):
     """Performs the actual file rename"""
     if arguments['--verbose']:
-        print("Renaming {0} to {1}".format(old_file_name,new_file_name))
+        print("Renaming {} to {}".format(old_file_name,new_file_name))
 
     if not arguments['--test']:
         os.rename(old_file_name,new_file_name)
