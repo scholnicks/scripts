@@ -22,6 +22,7 @@ Options:
     -p, --prepend=<prefix>                     Prefix to be prepended
     --random                                   Randomizes the files
     -r, --remove=<pattern>                     Pattern to be removed, can be a regex
+    -q, --quiet                                Quiet mode
     -s, --substitute=<substitution pattern>    Substitutes a pattern (old/new, old can be a regex)
     -t, --test                                 Test mode (Just prints the rename operations)
     --titles=<input file with titles>          Rename the files by names in the specified input file
@@ -43,6 +44,7 @@ def main(files):
         usage()
 
     if arguments['--verbose']:
+        arguments["--quiet"] = False
         print("Renaming: {}\n".format(", ".join(files)))
 
     if arguments['--random']:
@@ -138,7 +140,7 @@ def calculateExtension(files):
 def performRenameOperation(fileName):
     """Performs a renaming operation on the specified filename"""
     if not os.path.exists(fileName):
-        print("{} does not exist, skipping.".format(fileName),file=sys.stderr)
+        if not arguments['--quiet']: print("{} does not exist, skipping.".format(fileName),file=sys.stderr)
         return
 
     newFileName = fileName
