@@ -33,16 +33,13 @@ import re
 #import lameenc
 
 
-FFMPEG_COMMAND       = 'ffmpeg -i "{}" -acodec libmp3lame -ab 256k "{}" 1>/dev/null 2>&1'
 CONVERT_COMMAND_LINE = '{} "{}" "{}" 1>/dev/null 2>&1'
 EYED3_COMMAND_LINE   = 'eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc-num {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'
 MP3_EXTENSION        = 'mp3'
 
 ENCODERS = {
     'aiff': '/usr/local/bin/sox -q',
-    'm4a':  FFMPEG_COMMAND,
     'mp3':  '/usr/local/bin/lame --nohist --silent',
-    'opus':  FFMPEG_COMMAND,
     'wav':  '/usr/local/bin/sox -q'
 }
 
