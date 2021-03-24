@@ -30,7 +30,6 @@ Options:
 import sys
 import os
 import re
-#import lameenc
 
 
 CONVERT_COMMAND_LINE = '{} "{}" "{}" 1>/dev/null 2>&1'
@@ -40,6 +39,7 @@ MP3_EXTENSION        = 'mp3'
 ENCODERS = {
     'aiff': '/usr/local/bin/sox -q',
     'mp3':  '/usr/local/bin/lame --nohist --silent',
+    'flac': '/usr/local/bin/flac',                      # always converts to WAV
     'wav':  '/usr/local/bin/sox -q'
 }
 
@@ -86,8 +86,8 @@ def convertFile(musicFile,inputFormat):
     if not arguments['--quiet']:
         print(f"Converting {musicFile} to {destinationFilename}")
 
-    if inputFormat == 'm4a' or inputFormat == 'opus':
-        ret = os.system(FFMPEG_COMMAND.format(musicFile,destinationFilename))
+    if inputFormat == 'flac':
+        ret = os.system('/usr/local/bin/flac -d "{}"'.format(musicFile))
     else:
         ret = os.system(CONVERT_COMMAND_LINE.format(ENCODERS[extension],musicFile,destinationFilename))
 
