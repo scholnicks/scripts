@@ -8,7 +8,7 @@
 # The sak source code is published under a MIT license.
 
 """
-sak: Song Army Knife, manipulate song files in several ways
+sak: Song Army Knife, manipulate song files in many different ways
 
 Usage:
     sak [options] <files>...
@@ -23,7 +23,7 @@ Options:
     -3, --mp3               Convert to MP3 (default)
     -q, --quiet             Quiet mode
     -t, --tag               Add the MP3 Tags
-    -w, --wav               Convert to WAV format
+    -w, --wav               Convert to WAV
     -v, --version           Prints the version
 """
 
@@ -31,10 +31,7 @@ import sys
 import os
 import re
 
-
-CONVERT_COMMAND_LINE = '{} "{}" "{}" 1>/dev/null 2>&1'
-EYED3_COMMAND_LINE   = 'eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc-num {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'
-MP3_EXTENSION        = 'mp3'
+MP3_EXTENSION = 'mp3'
 
 ENCODERS = {
     'aiff': '/usr/local/bin/sox -q',
@@ -42,8 +39,6 @@ ENCODERS = {
     'flac': '/usr/local/bin/flac',                      # always converts to WAV
     'wav':  '/usr/local/bin/sox -q'
 }
-
-arguments = None        # quiet VS Code's linter
 
 def main(files):
     '''Main method'''
@@ -89,10 +84,10 @@ def convertFile(musicFile,inputFormat):
     if inputFormat == 'flac':
         ret = os.system('/usr/local/bin/flac -d "{}"'.format(musicFile))
     else:
-        ret = os.system(CONVERT_COMMAND_LINE.format(ENCODERS[extension],musicFile,destinationFilename))
+        ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS[extension],musicFile,destinationFilename))
 
     if ret != 0:
-        print(f"*** Unable to convert {musicFile}. Keeping original. ***")
+        print(f"Unable to convert {musicFile}. Keeping original",out=sys.stderr)
     else:
         if not arguments['--keep']:
             os.unlink(musicFile)
@@ -109,7 +104,7 @@ def addMP3Tags(destinationFile,index,numberOfFiles):
     '''Adds the MP3 Tags using the eyeD3 command line tool'''
     match = re.match(r'^[0-9]+ - (.*)\.mp3$',destinationFile)
 
-    os.system(EYED3_COMMAND_LINE.format(
+    ret = os.system('eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc-num {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'.format(
         match.groups()[0] if match else filename(destinationFile),
         arguments['--album'] if arguments['--album'] else '',
         arguments['--artist'] if arguments['--artist'] else '',
@@ -119,6 +114,8 @@ def addMP3Tags(destinationFile,index,numberOfFiles):
         numberOfFiles,
         destinationFile
     ))
+    if ret != 0:
+        print(f"Unable to apply MP3 IDs to {destinationFile}",out=sys.stderr)
 
 
 def getDestinationFormat():
