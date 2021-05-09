@@ -87,7 +87,7 @@ def convertFile(musicFile,inputFormat):
         ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS[extension],musicFile,destinationFilename))
 
     if ret != 0:
-        print(f"Unable to convert {musicFile}. Keeping original",out=sys.stderr)
+        print(f"Unable to convert {musicFile}. Keeping original",file=sys.stderr)
     else:
         if not arguments['--keep']:
             os.unlink(musicFile)
@@ -115,7 +115,7 @@ def addMP3Tags(destinationFile,index,numberOfFiles):
         destinationFile
     ))
     if ret != 0:
-        print(f"Unable to apply MP3 IDs to {destinationFile}",out=sys.stderr)
+        print(f"Unable to apply MP3 IDs to {destinationFile}",file=sys.stderr)
 
 
 def getDestinationFormat():
