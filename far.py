@@ -8,73 +8,57 @@
 far: Find and replace all instances of a string with a new string in a directory and all its sub-directories.
 
 Usage:
-    far [options] [<replacement>] [<pattern>]
+    far [options] <pattern> <replacement>
 
 Options:
     -d, --directory=<directory>   Starting directory [default: .]
-    --dry-run                     Just list the files to be changed, no actual changes
-    -e, --extension=<extension>   File extension
+    -e, --extension=<extension>   Only process file with this extension
     -h, --help                    Show this help screen
-    --usage                       Detailed usage information
+    -l, --list                    Just list the files to be changed, no actual changes
     -v, --verbose                 Verbose Mode
     --version                     Prints the version
 """
 
 import os
-import sys
 import re
+import sys
+
+EXCLUDE_DIRECTORIES = ('.git','.hg','.svn','.vscode','.idea','.metadata','node_modules')
 
 def main():
-    if arguments['--usage'] or not arguments['<pattern>'] or not arguments['<replacement>']:
-        usage()
-
-    if arguments['--dry-run']:
-        arguments['--verbose'] = True
-
+    """Main method"""
     eligibleFiles = []
-    for root, dirs, files in os.walk(os.path.abspath(arguments['--directory'])):
+    for root, dirs, files in os.walk(os.path.abspath(arguments['--directory']),topdown=True):
+        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRECTORIES]
         eligibleFiles += [os.path.join(root,f) for f in files if matches(f)]
 
     for file in eligibleFiles:
-        if not arguments['--dry-run']:
+        if arguments['--list']:
+            print("{}".format(file))
+        else:
             processFile(file)
-        if arguments['--verbose']: print("Processed {0}".format(file))
+            if arguments['--verbose']: print("Processed {}".format(file))
 
     sys.exit(0)
 
 
 def processFile(file):
-    old = arguments['<pattern>']
-    new = arguments['<replacement>']
-
+    """Processes a file"""
     with open(file,"r") as inFile:
         input_data = inFile.readlines()
 
-    output = [line.replace(old,new) for line in input_data]
+    output = [line.replace(arguments['<pattern>'],arguments['<replacement>']) for line in input_data]
 
     with open(file,'w') as outFile:
         outFile.writelines(output)
 
 
 def matches(filename):
+    """Returns if the filename should be processed"""
     return filename.lower().endswith(arguments['--extension']) if arguments['--extension'] else True
-
-
-def usage():
-    print(__doc__ + """
-Example
--------
-far -e .html bar foo
-
-For all files starting with the directory website, all foo references are changed to bar.
-
-Similar to find . -name "*.html" -print0 | xargs -0 sed -i '' -e 's/foo/bar/g'
-
-""")
-    sys.exit(0)
 
 
 if __name__ == '__main__':
     from docopt import docopt
-    arguments = docopt(__doc__, version='1.1.1')
+    arguments = docopt(__doc__, version='1.2.0')
     main()
