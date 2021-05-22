@@ -130,5 +130,5 @@ def getDestinationFormat():
 
 if __name__ == '__main__':
     from docopt import docopt
-    arguments = docopt(__doc__, version='1.0.0')
+    arguments = docopt(__doc__, version='1.2.0')
     main(arguments['<files>'])
