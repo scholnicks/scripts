@@ -12,8 +12,8 @@ Usage:
 
 Options:
     -a, --append=<suffix>                      Suffix to be appended
-    -d, --delimiter=<delimiter>                Specifies the delimiter for fixing numerical filenames
-    --directory=<directory>                    Destination directory
+    -d, --delimiter=<delimiter>                Specifies the delimiter for fixing numerical filenames  [default: ,]
+    --directory=<directory>                    Destination directory [default: .]
     -f, --fix=<maximum number of digits>       Fixes numerical file names
     -h, --help                                 Show this help screen
     -l, --lower                                Translates the filenames to lowercase
@@ -61,6 +61,7 @@ def main(files):
 
     sys.exit(0)
 
+
 def nameFilesByInputFile(files):
     """Names files by using an input text file"""
     extension = calculateExtension(files)
@@ -71,24 +72,24 @@ def nameFilesByInputFile(files):
     if len(files) != len(exportFileNames):
         raise SystemExit("{} filenames ({}) and files length ({}) do not match".format(arguments['--titles'],len(exportFileNames),len(files)))
 
-    filename_template = r'{num:02d} - {filename}{extension}' if len(files) < 100 else r'{num:04d} - {filename}{extension}'
+    filenameTemplate = r'{num:02d} - {filename}{extension}' if len(files) < 100 else r'{num:04d} - {filename}{extension}'
     index = 1
-    for current_file_path,new_file_name in zip(files,exportFileNames):
-        new_file_path = os.path.join( os.path.dirname(current_file_path), filename_template.format(num=index,filename=new_file_name,extension=extension) )
-        rename_file(current_file_path,new_file_path)
+    for currentFilePath,newFileName in zip(files,exportFileNames):
+        newFilePath = os.path.join( os.path.dirname(currentFilePath), filenameTemplate.format(num=index,filename=newFileName,extension=extension) )
+        rename_file(currentFilePath,newFilePath)
         index += 1
 
 
 def orderFiles(files):
     """Orders the files"""
-    filename_template = r'{num:02d} - {filename}' if len(files) < 100 else r'{num:04d} - {filename}'
+    filenameTemplate = r'{num:02d} - {filename}' if len(files) < 100 else r'{num:04d} - {filename}'
 
-    for (index,current_file_path) in enumerate(sorted(files),1):
-        new_file_path = os.path.join(
-            os.path.dirname(current_file_path),
-            filename_template.format(num=index,filename=os.path.basename(current_file_path))
+    for (index,currentFilePath) in enumerate(sorted(files),1):
+        newFilePath = os.path.join(
+            os.path.dirname(currentFilePath),
+            filenameTemplate.format(num=index,filename=os.path.basename(currentFilePath))
         )
-        rename_file(current_file_path,new_file_path)
+        rename_file(currentFilePath,newFilePath)
 
 
 def randomizeFiles(files):
@@ -169,13 +170,13 @@ def performRenameOperation(fileName):
         rename_file(fileName,newFileName)
 
 
-def rename_file(old_file_name, new_file_name):
+def rename_file(oldName,newName):
     """Performs the actual file rename"""
     if arguments['--verbose']:
-        print("Renaming {} to {}".format(old_file_name,new_file_name))
+        print("Renaming {} to {}".format(oldName,newName))
 
     if not arguments['--test']:
-        os.rename(old_file_name,new_file_name)
+        os.rename(oldName,newName)
 
 
 def substitute(fileName,pattern):
@@ -207,16 +208,18 @@ def usage():
 
 Merge
 -----
+To merge files from two different directories into the current directory:
 
-merge requires a directory to be specified. prepend (defaults to file) can be used for the base name for the merged files.
-For example to merge files from two different directories into the current directory:
+rename --merge d1/* d2/*
 
-rename --merge --directory=. directory1/* directory2/*
-
-Input Files: directory1/file1.txt directory1/file2.txt directory2/file1.txt
+Input Files: d1/file1.txt d1/file2.txt d2/file1.txt
 Results: ./file_0001.txt ./file_0002.txt ./file_0003.txt
 
-where file_0003.txt is directory2/file3.txt
+where file_0003.txt is d2/file3.txt
+
+All of the files must have the same extension. The default filename format is file_NUMBER.extension. file_ can be changed
+using the --prepend option.
+
 
 Order
 -----
@@ -240,7 +243,7 @@ Randomly names files. --prepend can be use to specify the base filename (default
 
 if __name__ == '__main__':
     from docopt import docopt
-    arguments = docopt(__doc__, version='rename 2.0.0')
+    arguments = docopt(__doc__, version='rename 2.0.1')
 
     if arguments['--test']:
         arguments['--verbose'] = True
