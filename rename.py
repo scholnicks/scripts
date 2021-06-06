@@ -12,7 +12,7 @@ Usage:
 
 Options:
     -a, --append=<suffix>                      Suffix to be appended
-    -d, --delimiter=<delimiter>                Specifies the delimiter for fixing numerical filenames  [default: ,]
+    -d, --delimiter=<delimiter>                Specifies the delimiter for fixing numerical filenames
     --directory=<directory>                    Destination directory [default: .]
     -f, --fix=<maximum number of digits>       Fixes numerical file names
     -h, --help                                 Show this help screen
