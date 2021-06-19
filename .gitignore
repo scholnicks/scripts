@@ -1,3 +1,6 @@
 *.aiff
 *.mp3
+*.wav
+*.flac
+.vscode
 .idea
