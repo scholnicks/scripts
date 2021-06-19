@@ -36,7 +36,7 @@ MP3_EXTENSION = 'mp3'
 ENCODERS = {
     'aiff': '/usr/local/bin/sox -q',
     'mp3':  '/usr/local/bin/lame --nohist --silent',
-    'flac': '/usr/local/bin/flac',                      # always converts to WAV
+    'flac': '/usr/local/bin/flac --totally-silent',
     'wav':  '/usr/local/bin/sox -q'
 }
 
@@ -69,7 +69,7 @@ def calculateInputFormat(files):
     '''determines the extension'''
     extensions = set((os.path.splitext(f)[1].lower() for f in files))
     if len(extensions) > 1:
-        raise SystemExit("Only one type of input file allowed. Found: {0}".format(", ".join(extensions)))
+        raise SystemExit("Only one type of input file allowed. Found: {}".format(", ".join(extensions)))
 
     return extensions.pop()[1:]
 
@@ -82,7 +82,11 @@ def convertFile(musicFile,inputFormat):
         print(f"Converting {musicFile} to {destinationFilename}")
 
     if inputFormat == 'flac':
-        ret = os.system('/usr/local/bin/flac -d "{}"'.format(musicFile))
+        # flac only creates wav files. convert WAV to the destination format afterwards. wav -> wav will just be a noop
+        ret = os.system('/usr/local/bin/flac --totally-silent -d "{}"'.format(musicFile))
+        tempFile = musicFile.replace('.flac','.wav')
+        ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS['wav'],tempFile,destinationFilename))
+        os.unlink(tempFile)
     else:
         ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS[extension],musicFile,destinationFilename))
 
