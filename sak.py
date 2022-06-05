@@ -68,11 +68,7 @@ def convertFile(musicFile,extension):
         print(f"Converting {musicFile} to {destinationFilename}")
 
     if musicFile.endswith('.flac'):
-        # flac only creates wav files. convert wav to the destination format afterwards.
-        ret = os.system('{} "{}"'.format(ENCODERS['flac'],musicFile))
-        tempFile = musicFile.replace('.flac','.wav')
-        ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS['wav'],tempFile,destinationFilename))
-        os.unlink(tempFile)
+        convertFromFlac(musicFile, destinationFilename)
     else:
         ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS[extension],musicFile,destinationFilename))
 
@@ -83,6 +79,17 @@ def convertFile(musicFile,extension):
             os.unlink(musicFile)
 
     return destinationFilename
+
+def convertFromFlac(musicFile, destinationFilename):
+    """Converts from flac to the destination format"""
+    # flac -d converts to a WAV file
+    ret = os.system('{} "{}"'.format(ENCODERS['flac'],musicFile))
+
+    if not arguments['--wav']:
+        # if the destination format is not wav, do the further conversion
+        tempFile = musicFile.replace('.flac','.wav')
+        ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS['wav'],tempFile,destinationFilename))
+        os.unlink(tempFile)
 
 
 def filename(filenameWithExtension):
