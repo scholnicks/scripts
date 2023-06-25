@@ -22,6 +22,7 @@ Options:
     -h, --help              Show this help screen
     -3, --mp3               Convert to MP3 (default)
     -q, --quiet             Quiet mode
+    -s, --silent            Silent mode, suppresse error messages
     -t, --tag               Add the MP3 Tags
     -w, --wav               Convert to WAV
     -v, --version           Prints the version
@@ -42,6 +43,9 @@ ENCODERS = {
 
 def main(files):
     """Main method"""
+
+    if len(files) == 0:
+        sys.exit(0)
 
     destinationFormat = getDestinationFormat()
 
@@ -72,11 +76,11 @@ def convertFile(musicFile,extension):
     else:
         ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS[extension],musicFile,destinationFilename))
 
-    if ret != 0:
-        print(f"Unable to convert {musicFile}. Keeping original",file=sys.stderr)
-    else:
-        if not arguments['--keep']:
-            os.unlink(musicFile)
+        if ret != 0:
+            if not arguments['--silent']: print(f"Unable to convert {musicFile}. Keeping original",file=sys.stderr)
+        else:
+            if not arguments['--keep']:
+                os.unlink(musicFile)
 
     return destinationFilename
 
@@ -112,7 +116,7 @@ def addMP3Tags(destinationFile,index,numberOfFiles):
         destinationFile
     ))
     if ret != 0:
-        print(f"Unable to apply MP3 IDs to {destinationFile}",file=sys.stderr)
+        if not arguments['--silent']: print(f"Unable to apply MP3 IDs to {destinationFile}",file=sys.stderr)
 
 
 def getDestinationFormat():
