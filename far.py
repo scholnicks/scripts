@@ -24,12 +24,12 @@ import os
 import re
 import sys
 
-EXCLUDED_DIRECTORIES = ('.git','.hg','.svn','.vscode','.idea','.metadata','node_modules')
+EXCLUDED_DIRECTORIES = ('.git','.hg','.svn','.vscode','.idea','.metadata','node_modules','.gradle','.m2')
 
 def main():
     """Main method"""
     if not arguments['--remove'] and not arguments['<replacement>']:
-        raise SystemExit('far: <replacement> is required')
+        raise SystemExit('far: <replacement> or --remove is required')
 
     eligibleFiles = []
     for root, dirs, files in os.walk(os.path.abspath(arguments['--directory']),topdown=True):
