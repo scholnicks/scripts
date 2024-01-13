@@ -7,3 +7,4 @@ under active development. All scripts have been tested under macOS, but they sho
 There is a little documentation (via --help command line parameter), but most of the scripts are self-explanatory.
 
 All are published under a [MIT License](https://github.com/scholnicks/scripts/blob/master/license.txt)
+
