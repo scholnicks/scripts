@@ -35,10 +35,10 @@ import re
 MP3_EXTENSION = 'mp3'
 
 ENCODERS = {
-    'aiff':        '/usr/local/bin/sox --no-show-progress',
-    MP3_EXTENSION: '/usr/local/bin/lame --nohist --silent',
-    'flac':        '/usr/local/bin/flac --totally-silent -d',
-    'wav':         '/usr/local/bin/sox --no-show-progress'
+    'aiff':        '/opt/homebrew/bin/sox --no-show-progress',
+    MP3_EXTENSION: '/opt/homebrew/bin/lame --nohist --silent',
+    'flac':        '/opt/homebrew/bin/flac --totally-silent -d',
+    'wav':         '/opt/homebrew/bin/sox --no-show-progress'
 }
 
 def main(files):
@@ -105,7 +105,7 @@ def addMP3Tags(destinationFile,index,numberOfFiles):
     """Adds the MP3 Tags using the eyeD3 command line tool"""
     match = re.match(r'^[0-9]+ - (.*)\.mp3$',destinationFile)
 
-    ret = os.system('/usr/local/bin/eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc-num {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'.format(
+    ret = os.system('/opt/homebrew/bin/eyed3 --quiet --title "{}" --album "{}" --artist "{}" --album-artist "{}" --disc-num {} --track {} --track-total {} "{}" 1>/dev/null 2>&1'.format(
         match.groups()[0] if match else filename(destinationFile),
         arguments['--album'] if arguments['--album'] else '',
         arguments['--artist'] if arguments['--artist'] else '',
