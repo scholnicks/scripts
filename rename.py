@@ -1,5 +1,5 @@
 #!/usr/bin/env python -B
-# -*- coding: utf-8 -*-
+# vi: set syntax=python ts=4 sw=4 sts=4 et ff=unix ai si :
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
 # The rename source code is published under a MIT license.

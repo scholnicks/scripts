@@ -1,5 +1,5 @@
 #!/usr/bin/env python -B
-# -*- coding: utf-8 -*-
+# vi: set syntax=python ts=4 sw=4 sts=4 et ff=unix ai si :
 #
 # sak uses several external tools: sox, ffmpeg, lame, eyeD3.
 # On macOS, these can all easily be installed using homebrew.
