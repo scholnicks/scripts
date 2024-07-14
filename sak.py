@@ -21,8 +21,7 @@ Options:
     -k, --keep              Keep the input file after conversion
     -h, --help              Show this help screen
     -3, --mp3               Convert to MP3 (default)
-    -q, --quiet             Quiet mode
-    -s, --silent            Silent mode, suppresse error messages
+    -s, --silent            Silent mode
     -t, --tag               Add the MP3 Tags
     -w, --wav               Convert to WAV
     -v, --version           Prints the version
@@ -68,7 +67,7 @@ def main(files):
 def convertFile(musicFile,extension):
     """Converts the musicFile to the destination format"""
     destinationFilename = filename(musicFile) + '.' + extension
-    if not arguments['--quiet']:
+    if not arguments['--silent']:
         print(f"Converting {musicFile} to {destinationFilename}")
 
     if musicFile.endswith('.flac'):
@@ -116,7 +115,7 @@ def addMP3Tags(destinationFile,index,numberOfFiles):
         destinationFile
     ))
     if ret != 0:
-        if not arguments['--silent']: print(f"Unable to apply MP3 IDs to {destinationFile}",file=sys.stderr)
+        if not arguments['--quiet']: print(f"Unable to apply MP3 IDs to {destinationFile}",file=sys.stderr)
 
 
 def getDestinationFormat():
