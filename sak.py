@@ -37,6 +37,7 @@ ENCODERS = {
     'aiff':        'sox --no-show-progress',
     MP3_EXTENSION: 'lame --nohist --silent',
     'flac':        'flac --totally-silent -d',
+    'shn':         'ffmpeg -i',
     'wav':         'sox --no-show-progress'
 }
 
@@ -82,6 +83,7 @@ def convertFile(musicFile,extension):
                 os.unlink(musicFile)
 
     return destinationFilename
+
 
 def convertFromFlac(musicFile, destinationFilename):
     """Converts from flac to the destination format"""
