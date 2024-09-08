@@ -18,6 +18,7 @@ Options:
     --album=<album>         MP3 Album Tag Info
     --artist=<artist>       MP3 Artist Tag Info
     -d, --disc=<discNumber> Disk number [default: 0]
+    --debug                 Debug option
     -k, --keep              Keep the input file after conversion
     -h, --help              Show this help screen
     -3, --mp3               Convert to MP3 (default)
@@ -73,7 +74,10 @@ def convertFile(musicFile,extension):
 
     if musicFile.endswith('.flac'):
         convertFromFlac(musicFile, destinationFilename)
+    elif musicFile.endswith('.shn'):
+        convertFromFlac(musicFile, destinationFilename)
     else:
+        if arguments['--debug']: print('Debug: For Extension {} : {} "{}" "{}" 1>/dev/null 2>&1'.format(extension,ENCODERS[extension],musicFile,destinationFilename))
         ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS[extension],musicFile,destinationFilename))
 
         if ret != 0:
@@ -86,13 +90,27 @@ def convertFile(musicFile,extension):
 
 
 def convertFromFlac(musicFile, destinationFilename):
-    """Converts from flac to the destination format"""
+    """Converts from shn to the destination format"""
     # flac -d converts to a WAV file
     ret = os.system('{} "{}"'.format(ENCODERS['flac'],musicFile))
 
     if not arguments['--wav']:
         # if the destination format is not wav, do the further conversion
         tempFile = musicFile.replace('.flac','.wav')
+        ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS['wav'],tempFile,destinationFilename))
+        os.unlink(tempFile)
+
+
+def convertFromSHN(musicFile, destinationFilename):
+    """Converts from shn to the destination format"""
+    # TODO: combine this with convertFromFlac?
+
+    # converts to a WAV file
+    ret = os.system('{} "{}"'.format(ENCODERS['shn'],musicFile))
+
+    if not arguments['--wav']:
+        # if the destination format is not wav, do the further conversion
+        tempFile = musicFile.replace('.shn','.wav')
         ret = os.system('{} "{}" "{}" 1>/dev/null 2>&1'.format(ENCODERS['wav'],tempFile,destinationFilename))
         os.unlink(tempFile)
 

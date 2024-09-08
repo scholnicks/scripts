@@ -2,5 +2,6 @@
 *.mp3
 *.wav
 *.flac
+*.shn
 .vscode
 .idea
