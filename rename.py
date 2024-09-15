@@ -75,7 +75,7 @@ def nameFilesByInputFile(files):
     filenameTemplate = r'{num:02d} - {filename}{extension}' if len(files) < 100 else r'{num:04d} - {filename}{extension}'
     index = 1
     for currentFilePath,newFileName in zip(files,exportFileNames):
-        newFilePath = os.path.join( os.path.dirname(currentFilePath), filenameTemplate.format(num=index,filename=newFileName,extension=extension) )
+        newFilePath = os.path.join(os.path.dirname(currentFilePath), filenameTemplate.format(num=index,filename=newFileName,extension=extension))
         rename_file(currentFilePath,newFilePath)
         index += 1
 
@@ -85,10 +85,7 @@ def orderFiles(files):
     filenameTemplate = r'{num:02d} - {filename}' if len(files) < 100 else r'{num:04d} - {filename}'
 
     for (index,currentFilePath) in enumerate(sorted(files),1):
-        newFilePath = os.path.join(
-            os.path.dirname(currentFilePath),
-            filenameTemplate.format(num=index,filename=os.path.basename(currentFilePath))
-        )
+        newFilePath = os.path.join(os.path.dirname(currentFilePath), filenameTemplate.format(num=index,filename=os.path.basename(currentFilePath)))
         rename_file(currentFilePath,newFilePath)
 
 
@@ -105,10 +102,7 @@ def randomizeFiles(files):
 
     # rename the files in numeric order
     for (index,filename) in enumerate(files,1):
-        new_file_name = os.path.join(
-            os.path.dirname(filename),
-            '{prefix}_{num:04d}{extension}'.format(prefix=prefix,num=index,extension=extension)
-        )
+        new_file_name = os.path.join(os.path.dirname(filename),'{prefix}_{num:04d}{extension}'.format(prefix=prefix,num=index,extension=extension))
         rename_file(filename,new_file_name)
 
 
