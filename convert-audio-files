@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# vi: set syntax=sh ts=4 sw=4 sts=4 et ff=unix ai si :
+#
+# (c) Steven Scholnick <scholnicks@gmail.com>
+# The far source code is published under a MIT license.
+
+# convert-audio-files - takes in various music file types and converts
+#                       them to MP3 with tags and artwork
+
+[[ "$#" -ne 4 ]] && echo "Usage: convert-audio-files setlist artist album artwork" && exit 1
+
+# Initial cleanup
+
+rm -f *.txt *.md5 *.ffp
+
+# convert webp to jpg
+if [[ "${4: -5}" == ".webp" ]]; then
+    jpgFile=${4%.webp}.jpg
+    gm convert $4 ${jpgFile}
+    artwork=$jpgFile
+else
+    artwork=$4
+fi
+
+# Optimize the jpg
+temp_file="$(mktemp).jpg"
+jpegtran -copy none -optimize -outfile $temp_file $artwork || exit -1
+mv $temp_file $artwork
+
+# Create .wav files
+echo "Creating WAV files"
+
+# opus
+for i in *.opus; do ffmpeg -i "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
+rm -f *.opus
+
+# shorten
+for i in *.shn; do ffmpeg -i "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
+rm -f *.shn
+
+# flac
+flac --delete-input-file -d *.flac 2>/dev/null
+
+# mp3
+for i in *.mp3; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
+rm -f *.mp3
+
+# aiff
+rename --quiet -s '.aif/.aiff' *.aif
+for i in *.aiff; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
+rm -f *.aiff
+
+# Give the full filenames
+rename --titles=$1 *.wav || exit -1
+
+# Create the final mp3 files
+for i in *.wav;
+do
+    echo "Converting $i"
+    lame --nohist --silent "$i" "${i%.*}.mp3" 1>/dev/null 2>&1
+done
+rm -f *.wav
+
+# Add the MP3 tags
+
+total=$(/bin/ls -1q *.mp3 2>/dev/null | wc -l)
+counter=1
+for i in *.mp3;
+do
+    song=$(echo $i | cut -b6-)
+    eyed3 --quiet --title "${song%%.*}" --album "$3" --artist "$2" --album-artist "$2" --disc-num 0 --track $counter \
+        --add-image "$4:FRONT_COVER:Album Artwork" \
+        --track-total $total  "$i"
+    counter=$[$counter +1]
+done
+
+# Print out durations
+
+echo
+echo "Durations"
+for s in *.mp3; do echo -n $(ffmpeg -i "$s" -f null 2>&1 | grep Duration | cut -d, -f1 | cut -f1 | cut -b13-) "- $s" && echo; done
+echo
+
+exit 0
+
