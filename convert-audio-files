@@ -31,24 +31,25 @@ mv $temp_file $artwork
 echo "Creating WAV files"
 
 # opus
-for i in *.opus; do ffmpeg -loglevel 0 -nostats -i "$i" "${i%.*}.wav"
+for i in *.opus; do ffmpeg -loglevel 0 -nostats -i "$i" "${i%.*}.wav"; done
 rm -f *.opus
 
 # shorten
-for i in *.shn; do ffmpeg -loglevel 0 -nostats -i "$i" "${i%.*}.wav"
+for i in *.shn; do ffmpeg -loglevel 0 -nostats -i "$i" "${i%.*}.wav"; done
 rm -f *.shn
 
 # flac
-flac --silent --delete-input-file -d *.flac
+flac --silent --delete-input-file -d *.flac 1>/dev/null 2>&1
 
 # mp3
-for i in *.mp3; do sox --no-show-progress "$i" "${i%.*}.wav"
+for i in *.mp3; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
 rm -f *.mp3
 
 # aiff
 rename --quiet -s '.aif/.aiff' *.aif
-for i in *.aiff; do sox --no-show-progress "$i" "${i%.*}.wav"
+for i in *.aiff; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
 rm -f *.aiff
+
 
 # Give the full filenames with number prefixes
 rename --titles=$1 *.wav || exit -1
@@ -69,7 +70,7 @@ for i in *.mp3
 do
     song=$(echo $i | cut -b6-)
     eyed3 --quiet --title "${song%%.*}" --album "$3" --artist "$2" --album-artist "$2" --disc-num 0 --track $counter \
-        --add-image "$4:FRONT_COVER:Album Artwork" --track-total $total "$i"
+        --add-image "$4:FRONT_COVER:Album Artwork" --track-total $total "$i" 1>/dev/null
     counter=$[$counter +1]
 done
 
@@ -77,10 +78,10 @@ done
 
 echo
 echo "Durations"
-for s in *.mp3 
-do 
-    echo -n $(ffmpeg -i "$s" -f null 2>&1 | grep Duration | cut -d, -f1 | cut -f1 | cut -b13-) "- $s" 
-    echo 
+for s in *.mp3
+do
+    echo -n $(ffmpeg -i "$s" -f null 2>&1 | grep Duration | cut -d, -f1 | cut -f1 | cut -b13-) "- $s"
+    echo
 done
 echo
 
