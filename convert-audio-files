@@ -5,7 +5,7 @@
 #                       them to MP3 with tags and artwork
 #
 # (c) Steven Scholnick <scholnicks@gmail.com>
-# The far source code is published under a MIT license.
+# The convert-audio-files source code is published under a MIT license.
 
 [[ "$#" -ne 4 ]] && echo "Usage: convert-audio-files setlist artist album artwork" && exit 1
 
@@ -70,7 +70,7 @@ for i in *.mp3
 do
     song=$(echo $i | cut -b6-)
     eyed3 --quiet --title "${song%%.*}" --album "$3" --artist "$2" --album-artist "$2" --disc-num 0 --track $counter \
-        --add-image "$4:FRONT_COVER:Album Artwork" --track-total $total "$i" 1>/dev/null
+          --add-image "$4:FRONT_COVER:Album Artwork" --track-total $total "$i" 1>/dev/null
     counter=$[$counter +1]
 done
 
