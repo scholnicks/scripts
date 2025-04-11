@@ -62,6 +62,9 @@ do
 done
 rm -f *.wav
 
+echo
+echo "Adding mp3 tags and artwork"
+
 # Add the MP3 tags
 
 total=$(/bin/ls -1q *.mp3 | wc -l)
