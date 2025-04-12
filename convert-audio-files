@@ -50,7 +50,6 @@ rename --quiet -s '.aif/.aiff' *.aif
 for i in *.aiff; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
 rm -f *.aiff
 
-
 # Give the full filenames with number prefixes
 rename --titles=$1 *.wav || exit -1
 
@@ -69,11 +68,11 @@ echo "Adding mp3 tags and artwork"
 
 total=$(/bin/ls -1q *.mp3 | wc -l)
 counter=1
-for i in *.mp3
+for f in *.mp3
 do
-    song=$(echo $i | cut -b6-)
+    song=$(echo $f | cut -b6-)
     eyed3 --quiet --title "${song%%.*}" --album "$3" --artist "$2" --album-artist "$2" --disc-num 0 --track $counter \
-          --add-image "$4:FRONT_COVER:Album Artwork" --track-total $total "$i" 1>/dev/null
+          --add-image "$artwork:FRONT_COVER:Album Artwork" --track-total $total "$f" 1>/dev/null
     counter=$[$counter +1]
 done
 
