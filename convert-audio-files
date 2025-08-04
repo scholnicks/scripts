@@ -76,9 +76,7 @@ fi
 optimized_artwork="$(mktemp).jpg"
 jpegtran -copy none -optimize -outfile $optimized_artwork "$artwork" || exit -1
 
-
 # Add the MP3 tags
-
 total=$(/bin/ls -1q *.mp3 | wc -l)
 counter=1
 for f in *.mp3
@@ -90,7 +88,6 @@ do
 done
 
 # Print out durations
-
 echo
 echo "Durations"
 for s in *.mp3
