@@ -24,48 +24,51 @@ import os
 import re
 import sys
 
-EXCLUDED_DIRECTORIES = ('.git','.hg','.svn','.vscode','.idea','.metadata','node_modules','.gradle','.m2')
+EXCLUDED_DIRECTORIES = (".git", ".hg", ".svn", ".vscode", ".idea", ".metadata", "node_modules", ".gradle", ".m2")
+
 
 def main():
     """Main method"""
-    if not arguments['--remove'] and not arguments['<replacement>']:
-        raise SystemExit('far: <replacement> or --remove is required')
+    if not arguments["--remove"] and not arguments["<replacement>"]:
+        raise SystemExit("far: <replacement> or --remove is required")
 
     eligibleFiles = []
-    for root, dirs, files in os.walk(os.path.abspath(arguments['--directory']),topdown=True):
+    for root, dirs, files in os.walk(os.path.abspath(arguments["--directory"]), topdown=True):
         dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRECTORIES]
-        eligibleFiles += [os.path.join(root,f) for f in files if matches(f)]
+        eligibleFiles += [os.path.join(root, f) for f in files if matches(f)]
 
     for file in eligibleFiles:
-        if arguments['--list']:
+        if arguments["--list"]:
             print("{}".format(file))
         else:
             processFile(file)
-            if arguments['--verbose']: print("Processed {}".format(file))
+            if arguments["--verbose"]:
+                print("Processed {}".format(file))
 
     sys.exit(0)
 
 
 def processFile(file):
     """Processes a file"""
-    with open(file,"r") as inFile:
+    with open(file, "r") as inFile:
         input_data = inFile.readlines()
 
-    if arguments['--remove']:
-        output = [line for line in input_data if arguments['<pattern>'] not in line]
+    if arguments["--remove"]:
+        output = [line for line in input_data if arguments["<pattern>"] not in line]
     else:
-        output = [line.replace(arguments['<pattern>'],arguments['<replacement>']) for line in input_data]
+        output = [line.replace(arguments["<pattern>"], arguments["<replacement>"]) for line in input_data]
 
-    with open(file,'w') as outFile:
+    with open(file, "w") as outFile:
         outFile.writelines(output)
 
 
 def matches(filename):
     """Returns if the filename should be processed"""
-    return filename.lower().endswith(arguments['--extension']) if arguments['--extension'] else True
+    return filename.lower().endswith(arguments["--extension"]) if arguments["--extension"] else True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from docopt import docopt
-    arguments = docopt(__doc__, version='1.3.0')
+
+    arguments = docopt(__doc__, version="1.3.0")
     main()
