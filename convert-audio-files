@@ -33,7 +33,7 @@ rm -f *.shn
 flac --silent --delete-input-file -d *.flac 1>/dev/null 2>&1
 
 # aiff
-rename --quiet -s '.aif/.aiff' *.aif
+nomix --quiet -s '.aif/.aiff' *.aif
 for i in *.aiff; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
 rm -f *.aiff
 
@@ -45,7 +45,7 @@ fi
 
 if [[ "$tagOnly" == "false" ]]; then
     # Give the full filenames with number prefixes
-    rename --titles=$1 *.wav || exit -1
+    nomix --titles=$1 *.wav || exit -1
 fi
 
 if [[ "$tagOnly" == "false" ]]; then
