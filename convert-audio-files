@@ -46,9 +46,7 @@ fi
 if [[ "$tagOnly" == "false" ]]; then
     # Give the full filenames with number prefixes
     chname --titles=$1 *.wav || exit -1
-fi
 
-if [[ "$tagOnly" == "false" ]]; then
     # Create the final mp3 files from the .wav files
     if compgen -G "*.wav" > /dev/null; then
         for i in *.wav

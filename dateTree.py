@@ -22,8 +22,10 @@ Options:
     --version      Prints the version
 """
 
-import os, sys, shutil
 import datetime
+import os
+import shutil
+import sys
 
 from PIL import Image
 from PIL.ExifTags import TAGS

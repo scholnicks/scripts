@@ -6,8 +6,10 @@
 # (c) Steven Scholnick <scholnicks@gmail.com>
 # The ce source code is published under a MIT license.
 
-import os, sys, glob
+import glob
+import os
 import sqlite3
+import sys
 
 SQL = """select
         R.ZLASTNAME, R.ZFIRSTNAME, P.ZSTREET, P.ZCITY, P.ZSTATE, P.ZZIPCODE

@@ -22,9 +22,11 @@ Options:
     --version                     Prints the version
 """
 
-from bs4 import BeautifulSoup
-import os, sys
+import os
+import sys
+
 import requests
+from bs4 import BeautifulSoup
 
 FORMAT = "{0:80.70s} {1:10s}"
 
