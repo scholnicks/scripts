@@ -85,15 +85,5 @@ do
     counter=$[$counter +1]
 done
 
-# Print out durations
-echo
-echo "Durations"
-for s in *.mp3
-do
-    echo -n $(ffmpeg -i "$s" -f null 2>&1 | grep Duration | cut -d, -f1 | cut -f1 | cut -b13-) "- $s"
-    echo
-done
-echo
-
 exit 0
 
