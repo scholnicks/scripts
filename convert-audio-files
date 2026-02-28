@@ -16,7 +16,7 @@ fi
 [[ "$#" -ne 4 ]] && echo "Usage: convert-audio-files setlist artist album artwork" && exit 1
 
 # Initial cleanup
-rm -f *.md5 *.ffp *.jpg *.JPG *.txt
+rm -f *.md5 *.ffp *.jpg *.JPG *.txt *.pdf *.jpeg *.log
 
 # Create .wav files
 echo "Creating WAV files"
@@ -33,7 +33,7 @@ rm -f *.shn
 flac --silent --delete-input-file -d *.flac 1>/dev/null 2>&1
 
 # aiff
-chname --quiet -s '.aif/.aiff' *.aif
+chname substitute --quiet .aif .aiff *.aif 1>/dev/null 2>&1
 for i in *.aiff; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
 rm -f *.aiff
 
@@ -45,14 +45,14 @@ fi
 
 if [[ "$tagOnly" == "false" ]]; then
     # Give the full filenames with number prefixes
-    chname --titles=$1 *.wav || exit -1
+    chname titles $1 *.wav || exit -1
 
     # Create the final mp3 files from the .wav files
     if compgen -G "*.wav" > /dev/null; then
         for i in *.wav
         do
             echo "Converting $i"
-            lame --nohist --silent "$i" "${i%.*}.mp3"
+            lame --nohist --silent "$i" "${i%.*}.mp3" || exit -1
         done
         rm -f *.wav
     fi
@@ -84,6 +84,9 @@ do
           --add-image "$optimized_artwork:FRONT_COVER:Album Artwork" --track-total $total "$f" 1>/dev/null
     counter=$[$counter +1]
 done
+
+chmod 600 *.mp3
+rm -f $optimized_artwork
 
 exit 0
 
