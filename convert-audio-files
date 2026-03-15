@@ -19,7 +19,9 @@ fi
 rm -f *.md5 *.ffp *.jpg *.JPG *.txt *.pdf *.jpeg *.log
 
 # Create .wav files
-echo "Creating WAV files"
+if [[ "$tagOnly" == "false" ]]; then
+    echo "Creating WAV files"
+fi
 
 # opus
 for i in *.opus; do ffmpeg -loglevel 0 -nostats -i "$i" "${i%.*}.wav"; done
@@ -41,9 +43,7 @@ rm -f *.aiff
 if [[ "$tagOnly" == "false" ]]; then
     for i in *.mp3; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
     rm -f *.mp3
-fi
 
-if [[ "$tagOnly" == "false" ]]; then
     # Give the full filenames with number prefixes
     chname titles $1 *.wav || exit -1
 
