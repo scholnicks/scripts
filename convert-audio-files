@@ -39,6 +39,10 @@ chname substitute --quiet .aif .aiff *.aif 1>/dev/null 2>&1
 for i in *.aiff; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
 rm -f *.aiff
 
+# m4a
+for i in *.m4a; do ffmpeg -loglevel 0 -nostats -i "$i" "${i%.*}.wav"; done
+rm -f *.m4a
+
 # mp3
 if [[ "$tagOnly" == "false" ]]; then
     for i in *.mp3; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
