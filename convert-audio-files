@@ -66,6 +66,7 @@ echo
 echo "Adding mp3 tags and artwork"
 
 # convert webp to jpg
+
 if [[ "${4: -5}" == ".webp" ]]; then
     jpgFile=${4%.webp}.jpg
     gm convert $4 ${jpgFile}
@@ -79,6 +80,7 @@ optimized_artwork="$(mktemp).jpg"
 jpegtran -copy none -optimize -outfile $optimized_artwork "$artwork" || exit -1
 
 # Add the MP3 tags
+
 total=$(/bin/ls -1q *.mp3 | wc -l)
 counter=1
 for f in *.mp3
@@ -89,8 +91,10 @@ do
     counter=$[$counter +1]
 done
 
+# Cleanups
+
 chmod 600 *.mp3
-rm -f $optimized_artwork
+rm -f $optimized_artwork .DS_Store
 
 exit 0
 
