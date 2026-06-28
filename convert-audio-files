@@ -23,6 +23,9 @@ if [[ "$tagOnly" == "false" ]]; then
     echo "Creating WAV files"
 fi
 
+# Convert non-wav files to .wav
+# Support: Flac, Ogg, AIFF, M4A, MP3, Shorten
+
 # opus
 for i in *.opus; do ffmpeg -loglevel 0 -nostats -i "$i" "${i%.*}.wav"; done
 rm -f *.opus
@@ -43,10 +46,12 @@ rm -f *.aiff
 for i in *.m4a; do ffmpeg -loglevel 0 -nostats -i "$i" "${i%.*}.wav"; done
 rm -f *.m4a
 
-# mp3
 if [[ "$tagOnly" == "false" ]]; then
+    # mp3
     for i in *.mp3; do sox --no-show-progress "$i" "${i%.*}.wav" 1>/dev/null 2>&1; done
     rm -f *.mp3
+
+    # now have all .wav files, fix the names and convert them to mp3
 
     # Give the full filenames with number prefixes
     chname titles $1 *.wav || exit -1
