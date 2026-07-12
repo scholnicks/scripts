@@ -84,16 +84,23 @@ jpegtran -copy none -optimize -outfile $optimized_artwork "$artwork" || exit -1
 
 # Add the MP3 tags
 
-# TODO:  handle song titles with a . in them, e.g. Mr. Blue Sky
-
 total=$(/bin/ls -1q *.mp3 | wc -l)
 counter=1
-for f in *.mp3
-do
-    song=$(echo $f | cut -b6-)
-    eyed3 --quiet --title "${song%%.*}" --album "$3" --artist "$2" --album-artist "$2" --disc-num 0 --track $counter \
-          --add-image "$optimized_artwork:FRONT_COVER:Album Artwork" --track-total $total "$f" 1>/dev/null
-    counter=$[$counter +1]
+for f in *.mp3; do
+    song="${f:5}"
+    eyed3 --quiet \
+        --title "${song%.mp3}" \
+        --album "$3" \
+        --artist "$2" \
+        --album-artist "$2" \
+        --disc-num 0 \
+        --track "$counter" \
+        --release-date "${3##*.}" \
+        --recording-date "${3##*.}" \
+        --add-image "$optimized_artwork:FRONT_COVER:Album Artwork" \
+        --track-total "$total" \
+        "$f" 1>/dev/null
+    ((counter++))
 done
 
 # Cleanups
