@@ -54,13 +54,13 @@ if [[ "$tagOnly" == "false" ]]; then
     # now have all .wav files, fix the names and convert them to mp3
 
     # Give the full filenames with number prefixes
-    chname titles $1 *.wav || exit -1
+    chname titles $1 *.wav || exit 1
 
     # Create the final mp3 files from the .wav files
     for i in *.wav
     do
         echo "Converting $i"
-        lame --nohist --silent "$i" "${i%.*}.mp3" || exit -1
+        lame --nohist --silent "$i" "${i%.*}.mp3" || exit 1
     done
     rm -f *.wav
 fi
@@ -80,7 +80,7 @@ fi
 
 # Optimize the jpg
 optimized_artwork="$(mktemp).jpg"
-jpegtran -copy none -optimize -outfile $optimized_artwork "$artwork" || exit -1
+jpegtran -copy none -optimize -outfile $optimized_artwork "$artwork" || exit 1
 
 # Add the MP3 tags
 
