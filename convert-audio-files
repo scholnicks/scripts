@@ -7,6 +7,13 @@
 # (c) Steven Scholnick <scholnicks@gmail.com>
 # The convert-audio-files source code is published under a MIT license.
 
+getYear() {
+    [[ "$1" =~ [[:space:]][0-9]{1,2}\.[0-9]{1,2}\.([0-9]{4})$ ]] &&
+        printf '%s\n' "${BASH_REMATCH[1]}"
+}
+
+# Main script
+
 tagOnly="false"
 if [[ "$1" = "--tag" ]]; then
     tagOnly="true"
@@ -84,6 +91,8 @@ jpegtran -copy none -optimize -outfile $optimized_artwork "$artwork" || exit 1
 
 # Add the MP3 tags
 
+year=getYear($3)
+
 total=$(/bin/ls -1q *.mp3 | wc -l)
 counter=1
 for f in *.mp3; do
@@ -95,8 +104,8 @@ for f in *.mp3; do
         --album-artist "$2" \
         --disc-num 0 \
         --track "$counter" \
-        --release-date "${3##*.}" \
-        --recording-date "${3##*.}" \
+        --release-date "$year" \
+        --recording-date "$year" \
         --add-image "$optimized_artwork:FRONT_COVER:Album Artwork" \
         --track-total "$total" \
         "$f" 1>/dev/null
