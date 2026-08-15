@@ -91,7 +91,7 @@ jpegtran -copy none -optimize -outfile $optimized_artwork "$artwork" || exit 1
 
 # Add the MP3 tags
 
-year=getYear($3)
+year=$(getYear "$3")
 
 total=$(/bin/ls -1q *.mp3 | wc -l)
 counter=1
