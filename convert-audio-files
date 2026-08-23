@@ -77,13 +77,18 @@ echo "Adding mp3 tags and artwork"
 
 # convert webp to jpg
 
-if [[ "${4: -5}" == ".webp" ]]; then
-    jpgFile=${4%.webp}.jpg
-    gm convert $4 ${jpgFile}
-    artwork=$jpgFile
-else
-    artwork="$4"
-fi
+case "$4" in
+    *.webp|*.png)
+        jpgFile="${4%.*}.jpg"
+
+        gm convert "$4" "$jpgFile"
+
+        artwork="$jpgFile"
+        ;;
+    *)
+        artwork="$4"
+        ;;
+esac
 
 # Optimize the jpg
 optimized_artwork="$(mktemp).jpg"
